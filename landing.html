@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>In-Taxi Gaming Network — Captive Audience Advertising in Zagreb</title>
+<meta name="description" content="Interactive gaming tablets in premium Zagreb taxis. Reach captive premium passengers through games, video bumpers, and QR redemptions.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700;9..144,800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --bg-2: #161618;
+    --bg-3: #1e1e24;
+    --gold: #f5a823;
+    --gold-bright: #ffbb45;
+    --cream: #ffffff;
+    --text: #1a1a1a;
+    --text-light: #6a6a6a;
+    --text-dim: #9999a8;
+    --border: rgba(245, 168, 35, 0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--cream);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--gold); color: var(--bg); }
+
+  .display { font-family: 'Fraunces', serif; font-weight: 700; letter-spacing: -0.02em; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+  /* === NAV === */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 20px 32px;
+    background: rgba(12, 12, 14, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--cream);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--gold); }
+  .nav-links {
+    display: flex; gap: 36px; align-items: center;
+    font-size: 14px; font-weight: 500;
+  }
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+  .nav-cta {
+    padding: 10px 22px;
+    background: var(--gold);
+    color: var(--bg) !important;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .nav-cta:hover { background: var(--gold-bright); transform: translateY(-1px); }
+  .mobile-menu-btn { display: none; background: none; border: none; color: var(--cream); font-size: 24px; cursor: pointer; }
+
+  /* === HERO === */
+  .hero {
+    min-height: 100vh;
+    padding: 140px 32px 80px;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at top right, rgba(245, 168, 35, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom left, rgba(30, 30, 36, 0.6) 0%, transparent 60%),
+                var(--bg);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(245, 168, 35, 0.08) 0%, transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(30, 30, 36, 0.4) 0%, transparent 35%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(245, 168, 35, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 168, 35, 0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold); font-weight: 600;
+    margin-bottom: 28px;
+    opacity: 0; animation: fadeUp 0.8s 0.1s forwards;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 32px; height: 1px; background: var(--gold);
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 800;
+    font-size: clamp(48px, 6.5vw, 88px);
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero h1 .gold {
+    color: var(--gold);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .hero-sub {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 560px;
+    line-height: 1.55;
+    margin-bottom: 44px;
+    opacity: 0; animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .hero-ctas {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 32px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.25s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--bg);
+  }
+  .btn-primary:hover {
+    background: var(--gold-bright);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(245, 168, 35, 0.3);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--cream);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+  .btn .arrow { transition: transform 0.2s; }
+  .btn:hover .arrow { transform: translateX(4px); }
+
+  .hero-visual {
+    position: relative;
+    opacity: 0; animation: fadeIn 1s 0.5s forwards;
+  }
+
+  /* Mock tablet */
+  .tablet-mock {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #161618 0%, #0c0c0e 100%);
+    border: 8px solid #0c0c0e;
+    box-shadow:
+      0 50px 100px rgba(0,0,0,0.5),
+      0 0 0 1px rgba(245, 168, 35, 0.15),
+      inset 0 0 60px rgba(30, 30, 36, 0.5);
+    overflow: hidden;
+    transform: perspective(1000px) rotateY(-8deg) rotateX(4deg);
+    transition: transform 0.5s;
+  }
+  .tablet-mock:hover {
+    transform: perspective(1000px) rotateY(-4deg) rotateX(2deg);
+  }
+  .tablet-screen {
+    position: absolute; inset: 12px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #161618 0%, #0c0c0e 100%);
+    padding: 24px;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+  .game-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(245, 168, 35, 0.2);
+  }
+  .game-brand {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .game-timer {
+    font-size: 11px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.05);
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .game-question {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    line-height: 1.3;
+    margin-bottom: 22px;
+    color: var(--cream);
+    font-weight: 600;
+  }
+  .game-options { display: flex; flex-direction: column; gap: 10px; }
+  .game-option {
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--cream);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .game-option:hover { background: rgba(245, 168, 35, 0.1); border-color: var(--gold); }
+  .game-option.correct {
+    background: rgba(245, 168, 35, 0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .game-footer {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .game-footer .reward {
+    color: var(--gold); font-weight: 600;
+  }
+  .reward-pulse {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--gold); border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s infinite;
+  }
+
+  /* Floating elements */
+  .float-tag {
+    position: absolute;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(245, 168, 35, 0.3);
+    backdrop-filter: blur(10px);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gold);
+    animation: float 6s ease-in-out infinite;
+  }
+  .float-tag.t1 { top: 5%; right: -20px; animation-delay: 0s; }
+  .float-tag.t2 { bottom: 10%; left: -30px; animation-delay: 2s; }
+  .float-tag.t3 { top: 45%; right: -40px; animation-delay: 4s; }
+
+  /* === STATS BAND === */
+  .stats {
+    padding: 60px 32px;
+    background: linear-gradient(180deg, var(--bg) 0%, #080808 100%);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stats-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 64px;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 8px;
+    letter-spacing: -0.03em;
+  }
+  .stat-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  /* === SECTIONS === */
+  section { padding: 120px 32px; position: relative; }
+  .section-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold); font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .section-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+
+  h2.section-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(36px, 5vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+    max-width: 800px;
+  }
+  h2.section-title .gold {
+    color: var(--gold);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .section-lead {
+    font-size: 19px;
+    color: var(--text-dim);
+    max-width: 680px;
+    margin-bottom: 64px;
+    line-height: 1.55;
+  }
+
+  /* === HOW IT WORKS === */
+  .how {
+    background: linear-gradient(180deg, #080808 0%, var(--bg) 100%);
+  }
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin-top: 40px;
+  }
+  .how-step {
+    position: relative;
+  }
+  .how-num {
+    font-family: 'Fraunces', serif;
+    font-size: 72px;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 20px;
+    opacity: 0.5;
+    font-style: italic;
+  }
+  .how-step h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--cream);
+  }
+  .how-step p {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  /* === FOR BRANDS / FOR FLEETS === */
+  .audiences {
+    background: var(--bg);
+    position: relative;
+  }
+  .audience-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 60px;
+    border-bottom: 1px solid var(--border);
+  }
+  .audience-tab {
+    padding: 20px 0;
+    margin-right: 48px;
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dim);
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+  }
+  .audience-tab.active { color: var(--cream); }
+  .audience-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+  }
+  .audience-content { display: none; }
+  .audience-content.active { display: grid; }
+
+  .audience-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .audience-text h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+  }
+  .audience-text h3 .gold { color: var(--gold); font-style: italic; font-weight: 400; }
+  .audience-text > p {
+    font-size: 17px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+
+  .feature-list {
+    list-style: none;
+    margin-bottom: 36px;
+  }
+  .feature-list li {
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 20px; align-items: flex-start;
+    font-size: 16px;
+    color: var(--cream);
+  }
+  .feature-list li:last-child { border-bottom: 1px solid var(--border); }
+  .feature-list .check {
+    color: var(--gold);
+    font-weight: 700;
+    flex-shrink: 0;
+    font-size: 18px;
+    margin-top: -2px;
+  }
+
+  .audience-card {
+    background: linear-gradient(180deg, rgba(245, 168, 35, 0.08) 0%, transparent 100%);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .audience-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .audience-card h5 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .price-tier {
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .price-tier:first-of-type { border-top: none; padding-top: 0; }
+  .price-tier .name {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 600;
+  }
+  .price-tier .desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .price-tier .price {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+    margin-left: 20px;
+  }
+
+  /* === SOCIAL PROOF / WHY === */
+  .why {
+    background: linear-gradient(180deg, var(--bg) 0%, #080808 100%);
+  }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-top: 40px;
+  }
+  .why-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px 32px;
+    transition: all 0.3s;
+  }
+  .why-card:hover {
+    background: rgba(245, 168, 35, 0.04);
+    border-color: rgba(245, 168, 35, 0.4);
+    transform: translateY(-4px);
+  }
+  .why-icon {
+    font-family: 'Fraunces', serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--gold);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .why-card h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+  .why-card p {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* === CTA SECTION === */
+  .final-cta {
+    background:
+      radial-gradient(ellipse at center, rgba(245, 168, 35, 0.15) 0%, transparent 60%),
+      linear-gradient(180deg, #080808 0%, var(--bg-3) 100%);
+    text-align: center;
+    padding: 140px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(245, 168, 35, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(245, 168, 35, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  }
+  .final-cta-inner { position: relative; max-width: 800px; margin: 0 auto; }
+  .final-cta h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .final-cta h2 .gold { color: var(--gold); font-style: italic; font-weight: 400; }
+  .final-cta p {
+    font-size: 19px;
+    color: var(--text-dim);
+    margin-bottom: 44px;
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* === FORM === */
+  .demo-form {
+    display: flex;
+    gap: 12px;
+    max-width: 540px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .demo-form input {
+    flex: 1;
+    min-width: 280px;
+    padding: 16px 22px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--cream);
+    transition: all 0.2s;
+  }
+  .demo-form input:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: rgba(245, 168, 35, 0.05);
+  }
+  .demo-form input::placeholder { color: var(--text-dim); }
+
+  /* === FOOTER === */
+  footer {
+    padding: 60px 32px 40px;
+    background: #080808;
+    border-top: 1px solid var(--border);
+  }
+  .footer-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 64px;
+    margin-bottom: 48px;
+  }
+  .footer-brand p {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 16px;
+    max-width: 320px;
+  }
+  .footer-col h6 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  .footer-col a {
+    display: block;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-bottom {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  /* === ANIMATIONS === */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  /* === REVEAL ON SCROLL === */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s, transform 0.8s;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .mobile-menu-btn { display: block; }
+    .nav-links.open {
+      display: flex;
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: var(--bg-2);
+      flex-direction: column;
+      padding: 20px 32px;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-inner { grid-template-columns: 1fr; gap: 60px; }
+    .hero-visual { max-width: 360px; margin: 0 auto; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+    .stat-num { font-size: 48px; }
+    .how-grid { grid-template-columns: 1fr 1fr; }
+    .audience-content.active { grid-template-columns: 1fr; gap: 40px; }
+    .why-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 40px; }
+    section { padding: 80px 24px; }
+    .audience-tabs { overflow-x: auto; }
+    .audience-tab { font-size: 18px; white-space: nowrap; margin-right: 32px; }
+    .float-tag { display: none; }
+  }
+
+  @media (max-width: 500px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .hero-ctas .btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">Drive<span>Play</span></a>
+    <div class="nav-links" id="navLinks">
+      <a href="#how">How it works</a>
+      <a href="#brands">For brands</a>
+      <a href="#fleets">For fleets</a>
+      <a href="#why">Why us</a>
+      <a href="#contact" class="nav-cta">Book demo</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">Captive premium audience · Zagreb</div>
+      <h1>
+        Reach passengers<br>
+        <span class="gold">when no one</span><br>
+        else can.
+      </h1>
+      <p class="hero-sub">
+        Interactive gaming tablets in premium Zagreb taxis. 15 minutes of undivided attention per ride. Real engagement, measured to the scan.
+      </p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn btn-primary">
+          Book a demo
+          <span class="arrow">→</span>
+        </a>
+        <a href="#how" class="btn btn-secondary">How it works</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="float-tag t1">100% viewability</div>
+      <div class="float-tag t2">90s engagement</div>
+      <div class="float-tag t3">QR redeemable</div>
+
+      <div class="tablet-mock">
+        <div class="tablet-screen">
+          <div class="game-header">
+            <div class="game-brand">★ POWERED BY FRANCK</div>
+            <div class="game-timer">0:42</div>
+          </div>
+          <div class="game-question">Koliki je trenutno najbolji pad kave u Hrvatskoj?</div>
+          <div class="game-options">
+            <div class="game-option">Tradicionalni Turski</div>
+            <div class="game-option correct">★ Franck Jubilarna</div>
+            <div class="game-option">Cold brew</div>
+            <div class="game-option">Espresso</div>
+          </div>
+          <div class="game-footer">
+            <span><span class="reward-pulse"></span><span class="reward">Win: -20% kupon</span></span>
+            <span>Round 3 of 5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS ===== -->
+<section class="stats">
+  <div class="stats-grid">
+    <div class="stat">
+      <div class="stat-num">10</div>
+      <div class="stat-label">Premium taxis</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">11K+</div>
+      <div class="stat-label">Monthly impressions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">15-20</div>
+      <div class="stat-label">Min per ride</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">90s</div>
+      <div class="stat-label">Avg engagement</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="section-title reveal">From ride start<br>to <span class="gold">measurable result.</span></h2>
+    <p class="section-lead reveal">Every step is tracked. Every interaction is reported. No estimated reach — real engagement, ride by ride.</p>
+
+    <div class="how-grid">
+      <div class="how-step reveal">
+        <div class="how-num">01</div>
+        <h4>Passenger enters</h4>
+        <p>Tablet wakes automatically. Inviting "play and win" splash screen greets every rider.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">02</div>
+        <h4>They play</h4>
+        <p>30-90s casual game with your brand integrated naturally — trivia, memory, reaction games.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">03</div>
+        <h4>They win</h4>
+        <p>Winners receive a QR code coupon — instant redemption at your store, online, or via app.</p>
+      </div>
+      <div class="how-step reveal">
+        <div class="how-num">04</div>
+        <h4>You measure</h4>
+        <p>Real-time dashboard: impressions, completion rates, scans, redemptions. Attributable ROI.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== AUDIENCES (For Brands / For Fleets) ===== -->
+<section class="audiences" id="brands">
+  <div class="container">
+    <div class="section-eyebrow">Built for two audiences</div>
+    <h2 class="section-title reveal">Where brands and fleets <span class="gold">profit together.</span></h2>
+
+    <div class="audience-tabs">
+      <button class="audience-tab active" data-tab="brands">For brands</button>
+      <button class="audience-tab" data-tab="fleets" id="fleets">For taxi fleets</button>
+    </div>
+
+    <div class="audience-content active" data-content="brands">
+      <div class="audience-text">
+        <h3>Premium passengers, <span class="gold">measurable results.</span></h3>
+        <p>Reach the audience your billboards can't quantify and your social ads can't capture full attention from. In-taxi is the last place where the phone goes in the pocket.</p>
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div>Captive audience, 100% viewability — no scrolling past</div></li>
+          <li><span class="check">✓</span><div>Category exclusivity — no competitors next to your campaign</div></li>
+          <li><span class="check">✓</span><div>QR-attributable conversions, not estimated reach</div></li>
+          <li><span class="check">✓</span><div>Premium passenger demographic — urban professionals</div></li>
+          <li><span class="check">✓</span><div>Multiple formats: game integration, video bumpers, takeovers</div></li>
+        </ul>
+      </div>
+      <div class="audience-card">
+        <h5>Brand Pricing</h5>
+        <div class="price-tier">
+          <div>
+            <div class="name">Game Integration</div>
+            <div class="desc">3 month minimum</div>
+          </div>
+          <div class="price">€600<span style="font-size: 14px; color: var(--text-dim);">/mo</span></div>
+        </div>
+        <div class="price-tier">
+          <div>
+            <div class="name">Video Bumper</div>
+            <div class="desc">Per 1,000 impressions</div>
+          </div>
+          <div class="price">€22<span style="font-size: 14px; color: var(--text-dim);"> CPM</span></div>
+        </div>
+        <div class="price-tier">
+          <div>
+            <div class="name">QR Performance</div>
+            <div class="desc">Pay-per-scan + setup</div>
+          </div>
+          <div class="price">€0.60<span style="font-size: 14px; color: var(--text-dim);">/scan</span></div>
+        </div>
+        <div class="price-tier">
+          <div>
+            <div class="name">Takeover Week</div>
+            <div class="desc">100% share of voice</div>
+          </div>
+          <div class="price">€1,800<span style="font-size: 14px; color: var(--text-dim);">/wk</span></div>
+        </div>
+        <a href="#contact" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 24px;">
+          Get rate card <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="audience-content" data-content="fleets">
+      <div class="audience-text">
+        <h3>Passive income, <span class="gold">zero investment.</span></h3>
+        <p>Turn your fleet into an additional revenue stream. We install, manage, and pay you a share of every ad campaign. Your drivers do nothing extra. You earn every month.</p>
+        <ul class="feature-list">
+          <li><span class="check">✓</span><div>€0 upfront investment — we provide tablets, software, content</div></li>
+          <li><span class="check">✓</span><div>Up to 30% revenue share from every brand campaign</div></li>
+          <li><span class="check">✓</span><div>Monthly transparent reports — see every brand, every euro</div></li>
+          <li><span class="check">✓</span><div>Tablets manage themselves — no driver workflow change</div></li>
+          <li><span class="check">✓</span><div>Pilot first in 2 vehicles — scale up only if it works</div></li>
+        </ul>
+      </div>
+      <div class="audience-card">
+        <h5>Fleet Earnings Model</h5>
+        <div class="price-tier">
+          <div>
+            <div class="name">3-month Pilot</div>
+            <div class="desc">2 vehicles, no fee, no commitment</div>
+          </div>
+          <div class="price">€0</div>
+        </div>
+        <div class="price-tier">
+          <div>
+            <div class="name">Months 1-6</div>
+            <div class="desc">Revenue share ramp-up</div>
+          </div>
+          <div class="price">20%</div>
+        </div>
+        <div class="price-tier">
+          <div>
+            <div class="name">Months 7-12</div>
+            <div class="desc">Growing brand portfolio</div>
+          </div>
+          <div class="price">25%</div>
+        </div>
+        <div class="price-tier">
+          <div>
+            <div class="name">Year 2 onwards</div>
+            <div class="desc">Mature partnership</div>
+          </div>
+          <div class="price">30%</div>
+        </div>
+        <a href="#contact" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 24px;">
+          Become a partner <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHY US ===== -->
+<section class="why" id="why">
+  <div class="container">
+    <div class="section-eyebrow">Why this works</div>
+    <h2 class="section-title reveal">Not a billboard.<br>Not an app.<br><span class="gold">Something better.</span></h2>
+
+    <div class="why-grid">
+      <div class="why-card reveal">
+        <div class="why-icon">I.</div>
+        <h4>Undivided attention</h4>
+        <p>Passengers can't scroll past, change the channel, or look away. Tablet is at eye level. Game is interactive. Attention is guaranteed for 15-20 minutes per ride.</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="why-icon">II.</div>
+        <h4>Premium demographic</h4>
+        <p>Taxi passengers in Zagreb skew higher-income, urban professionals, and business travelers. Exactly who consumer and B2C brands fight to reach in saturated channels.</p>
+      </div>
+      <div class="why-card reveal">
+        <div class="why-icon">III.</div>
+        <h4>Measurable conversion</h4>
+        <p>Every play, completion, video view, QR scan, and redemption is tracked. Get attributable ROI — not estimated reach. Real data, brand by brand, week by week.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="final-cta" id="contact">
+  <div class="final-cta-inner">
+    <h2>Let's build your<br><span class="gold">first campaign.</span></h2>
+    <p>30-minute demo with live tablet, custom pricing for your category, and founding partner rates for the first three brands per segment.</p>
+    <form class="demo-form" onsubmit="handleSubmit(event)">
+      <input type="email" name="email" placeholder="your@email.com" required>
+      <button type="submit" class="btn btn-primary">
+        Book demo <span class="arrow">→</span>
+      </button>
+    </form>
+    <p style="font-size: 13px; margin-top: 24px; color: var(--text-dim);">
+      Or email directly: <a href="mailto:hello@driveplay.hr" style="color: var(--gold); text-decoration: none;">hello@driveplay.hr</a>
+    </p>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo">Drive<span>Play</span></div>
+      <p>Zagreb's first gamified in-vehicle media network. Captive premium audience advertising, measured to the scan.</p>
+    </div>
+    <div class="footer-col">
+      <h6>Product</h6>
+      <a href="#how">How it works</a>
+      <a href="#brands">For brands</a>
+      <a href="#fleets">For fleets</a>
+      <a href="#why">Why us</a>
+    </div>
+    <div class="footer-col">
+      <h6>Company</h6>
+      <a href="#contact">Contact</a>
+      <a href="#">Press kit</a>
+      <a href="#">Careers</a>
+    </div>
+    <div class="footer-col">
+      <h6>Legal</h6>
+      <a href="#">Terms</a>
+      <a href="#">Privacy</a>
+      <a href="#">Cookies</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 2026 DrivePlay · Zagreb, Hrvatska</div>
+    <div>Made with intention.</div>
+  </div>
+</footer>
+
+<script>
+  // Audience tabs
+  document.querySelectorAll('.audience-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      document.querySelectorAll('.audience-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.audience-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`[data-content="${target}"]`).classList.add('active');
+    });
+  });
+
+  // Reveal on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Form handler (placeholder)
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = e.target.email.value;
+    alert(`Hvala! Javit ćemo se na ${email} u roku 24h.`);
+    e.target.reset();
+  }
+
+  // Smooth scroll close mobile menu on link click
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.addEventListener('click', () => {
+      document.getElementById('navLinks').classList.remove('open');
+    });
+  });
+</script>
+
+</body>
+</html>

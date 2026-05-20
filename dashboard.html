@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrivePlay — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0c0e;--bg2:#161618;--bg3:#1e1e24;--acc:#f5a823;--acc2:#ffbb45;--tx:#fff;--dim:#9999a8;--bdr:rgba(245,168,35,.15);--red:#ef4444;--grn:#22c55e;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.app{display:flex;min-height:100vh;}
+/* SIDEBAR */
+.sb{width:236px;background:var(--bg2);border-right:1px solid var(--bdr);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:10;overflow-y:auto;}
+.sb-logo{padding:22px 22px 18px;border-bottom:1px solid var(--bdr);}
+.sb-logo .logo{font-family:'Fraunces',serif;font-weight:800;font-size:20px;}
+.sb-logo .logo span{color:var(--acc);}
+.sb-logo .sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-top:4px;}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 22px;font-size:13px;font-weight:500;color:var(--dim);cursor:pointer;border-left:3px solid transparent;transition:all .15s;text-decoration:none;}
+.ni:hover{color:var(--tx);background:rgba(255,255,255,.03);}
+.ni.on{color:var(--acc);border-left-color:var(--acc);background:rgba(245,168,35,.06);}
+.ni-sep{height:1px;background:var(--bdr);margin:6px 0;}
+.sb-bottom{margin-top:auto;padding:14px 0;border-top:1px solid var(--bdr);}
+/* MAIN */
+.main{margin-left:236px;flex:1;padding:36px;}
+.page{display:none;}.page.on{display:block;}
+/* PAGE HEADER */
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+.ph-t{font-family:'Fraunces',serif;font-size:26px;font-weight:800;letter-spacing:-.02em;}
+.ph-s{font-size:13px;color:var(--dim);margin-top:3px;}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;}
+.btn-p{background:var(--acc);color:#0c0c0e;}.btn-p:hover{background:var(--acc2);}
+.btn-g{background:var(--bg3);color:var(--tx);border:1px solid var(--bdr);}.btn-g:hover{border-color:var(--acc);color:var(--acc);}
+.btn-d{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}.btn-d:hover{background:rgba(239,68,68,.2);}
+.btn-sm{padding:5px 11px;font-size:11px;}.btn-ic{width:28px;height:28px;padding:0;justify-content:center;}
+/* GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px;}
+/* BRAND CARD */
+.bc{background:var(--bg2);border:1px solid var(--bdr);border-radius:13px;overflow:hidden;transition:all .25s;}
+.bc:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4);border-color:rgba(245,168,35,.3);}
+.bc-strip{height:5px;}
+.bc-body{padding:18px;}
+.bc-head{display:flex;align-items:center;gap:13px;margin-bottom:12px;}
+.bc-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;overflow:hidden;}
+.bc-icon img{width:100%;height:100%;object-fit:cover;}
+.bc-name{font-family:'Fraunces',serif;font-size:17px;font-weight:700;line-height:1.1;}
+.bc-type{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;background:rgba(245,168,35,.1);border:1px solid rgba(245,168,35,.2);border-radius:999px;font-size:10px;font-weight:600;color:var(--acc);margin-top:4px;}
+.bc-rew{font-size:12px;color:var(--dim);margin-bottom:14px;}.bc-rew b{color:var(--tx);}
+.bc-acts{display:flex;gap:6px;padding-top:12px;border-top:1px solid var(--bdr);}
+/* SCREEN CARD */
+.sc{background:var(--bg2);border:1px solid var(--bdr);border-radius:13px;overflow:hidden;transition:all .25s;}
+.sc:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.sc-head{padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:flex-start;}
+.sc-info .name{font-family:'Fraunces',serif;font-size:17px;font-weight:700;}
+.sc-info .loc{font-size:12px;color:var(--dim);margin-top:2px;}
+.sc-live{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.5px;}
+.sc-live.on{background:rgba(34,197,94,.15);color:var(--grn);border:1px solid rgba(34,197,94,.3);}
+.sc-live.off{background:rgba(255,255,255,.05);color:var(--dim);border:1px solid rgba(255,255,255,.08);}
+.sc-brands{display:flex;gap:5px;flex-wrap:wrap;padding:0 18px 12px;}
+.sc-brand-chip{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;overflow:hidden;}
+.sc-brand-chip img{width:100%;height:100%;object-fit:cover;}
+.sc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--bdr);border-bottom:1px solid var(--bdr);}
+.sc-stat{padding:10px;text-align:center;border-right:1px solid var(--bdr);}
+.sc-stat:last-child{border-right:none;}
+.sc-stat .v{font-family:'Fraunces',serif;font-size:20px;font-weight:700;color:var(--acc);}
+.sc-stat .l{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-top:1px;}
+.sc-acts{display:flex;gap:6px;padding:12px 18px;}
+/* EMPTY */
+.empty{text-align:center;padding:60px 20px;color:var(--dim);grid-column:1/-1;}
+.empty .ei{font-size:44px;margin-bottom:12px;}
+.empty h3{font-family:'Fraunces',serif;font-size:20px;color:var(--tx);margin-bottom:6px;}
+.empty p{font-size:13px;margin-bottom:18px;}
+/* FORM */
+.fw{max-width:680px;}
+.fs{background:var(--bg2);border:1px solid var(--bdr);border-radius:13px;padding:24px;margin-bottom:16px;}
+.fs-t{font-family:'Fraunces',serif;font-size:16px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:9px;}
+.fs-n{width:24px;height:24px;background:var(--acc);color:#0c0c0e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.fr.f1{grid-template-columns:1fr;}.fr.f3{grid-template-columns:1fr 1fr 1fr;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fl{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;}
+.fi{background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:7px;padding:8px 11px;font-family:'Inter',sans-serif;font-size:13px;color:var(--tx);width:100%;transition:border-color .15s;}
+.fi:focus{outline:none;border-color:var(--acc);}
+.fi::placeholder{color:var(--dim);}
+select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239999a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+/* COLOR INPUT */
+.cw{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:7px;padding:6px 11px;transition:border-color .15s;}
+.cw:focus-within{border-color:var(--acc);}
+.cw input[type=color]{width:24px;height:24px;border:none;background:none;padding:0;cursor:pointer;border-radius:3px;flex-shrink:0;}
+.cw input[type=text]{background:none;border:none;font-family:'Inter',sans-serif;font-size:13px;color:var(--tx);flex:1;outline:none;}
+/* LOGO UPLOAD */
+.logo-upload-wrap{display:flex;align-items:center;gap:16px;}
+.logo-preview{width:64px;height:64px;border-radius:12px;background:var(--bg3);border:2px dashed rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--dim);overflow:hidden;flex-shrink:0;cursor:pointer;transition:border-color .2s;}
+.logo-preview:hover{border-color:var(--acc);}
+.logo-preview img{width:100%;height:100%;object-fit:cover;}
+.logo-upload-info{font-size:12px;color:var(--dim);line-height:1.5;}
+.logo-upload-info b{color:var(--tx);}
+/* GAME TYPE GRID */
+.gt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.gt{padding:14px 10px;background:var(--bg3);border:2px solid rgba(255,255,255,.05);border-radius:9px;text-align:center;cursor:pointer;transition:all .15s;}
+.gt:hover{border-color:rgba(245,168,35,.3);}
+.gt.on{border-color:var(--acc);background:rgba(245,168,35,.07);}
+.gt .gi{font-size:22px;margin-bottom:5px;}
+.gt .gl{font-size:11px;font-weight:700;}
+.gt .gd{font-size:10px;color:var(--dim);margin-top:2px;line-height:1.3;}
+/* CONTENT BUILDER */
+.q-list{display:flex;flex-direction:column;gap:9px;}
+.qi{background:var(--bg);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:13px;}
+.qi-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+.qi-n{font-size:10px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:1px;}
+.opts-g{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;}
+.opt-r{display:flex;align-items:center;gap:6px;}
+.opt-l{width:20px;height:20px;background:rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;color:var(--dim);}
+.cbtn{width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.15);cursor:pointer;flex-shrink:0;background:none;display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .15s;}
+.cbtn.on{background:var(--grn);border-color:var(--grn);color:#fff;}
+.mem-g{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;}
+.pr{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.tf-item{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.tf-toggle{padding:5px 12px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:all .15s;}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px;background:none;border:1px dashed rgba(255,255,255,.1);border-radius:7px;color:var(--dim);font-size:12px;font-weight:600;cursor:pointer;width:100%;margin-top:9px;transition:all .15s;font-family:'Inter',sans-serif;}
+.add-btn:hover{border-color:var(--acc);color:var(--acc);}
+/* BRAND CHECKBOXES (screen assignment) */
+.brand-checks{display:flex;flex-direction:column;gap:7px;}
+.brand-check-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid rgba(255,255,255,.05);border-radius:8px;cursor:pointer;transition:all .15s;}
+.brand-check-item:hover{border-color:rgba(245,168,35,.3);}
+.brand-check-item.checked{border-color:var(--acc);background:rgba(245,168,35,.05);}
+.brand-check-item input[type=checkbox]{display:none;}
+.brand-check-box{width:18px;height:18px;border-radius:4px;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.brand-check-item.checked .brand-check-box{background:var(--acc);border-color:var(--acc);color:#0c0c0e;font-size:11px;font-weight:800;}
+/* FORM ACTIONS */
+.fa{display:flex;justify-content:flex-end;gap:9px;margin-top:18px;}
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;padding:11px 16px;background:var(--bg2);border:1px solid var(--bdr);border-radius:8px;font-size:13px;font-weight:500;z-index:9999;transform:translateY(60px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateY(0);opacity:1;}
+/* PLAYER */
+#player{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;}
+#player.on{display:flex;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes bounce{0%{transform:scale(.2)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes fall{to{transform:translateY(900px) rotate(720deg);opacity:0}}
+@keyframes spin-reel{0%{transform:translateY(0)}100%{transform:translateY(-100%)}}
+.cfp{position:absolute;width:9px;height:9px;pointer-events:none;animation:fall 2.5s ease-in forwards;}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sb">
+  <div class="sb-logo">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="logo">Drive<span>Play</span></div>
+      <div id="cf-sync-dot" title="Cloud sync" style="display:none;width:8px;height:8px;border-radius:50%;background:#9999a8;flex-shrink:0;margin-top:2px"></div>
+    </div>
+    <div class="sub">Admin Dashboard</div>
+  </div>
+  <div style="height:10px"></div>
+  <div class="ni on" id="ni-brands" onclick="goTo('brands')">🎮 &nbsp;Brandovi &amp; igre</div>
+  <div class="ni" id="ni-screens" onclick="goTo('screens')">🖥️ &nbsp;Ekrani</div>
+  <div class="ni-sep"></div>
+  <div class="ni" id="ni-ab" onclick="goTo('add-brand')">＋ &nbsp;Novi brand</div>
+  <div class="ni" id="ni-as" onclick="goTo('add-screen')">＋ &nbsp;Novi ekran</div>
+  <div class="sb-bottom">
+    <a class="ni" href="game_demo-2.html" target="_blank" style="text-decoration:none;">🕹️ &nbsp;Otvori kiosk ↗</a>
+    <a class="ni" href="landing.html" target="_blank" style="text-decoration:none;">🌐 &nbsp;Landing page ↗</a>
+    <div style="padding:10px 22px;font-size:10px;color:var(--dim);">DrivePlay © 2026</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- BRANDS -->
+  <div class="page on" id="pg-brands">
+    <div class="ph">
+      <div><div class="ph-t">Brandovi &amp; igre</div><div class="ph-s" id="brand-count">—</div></div>
+      <button class="btn btn-p" onclick="goTo('add-brand')">＋ Novi brand</button>
+    </div>
+    <div class="cards-grid" id="brands-grid"></div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="page" id="pg-screens">
+    <div class="ph">
+      <div><div class="ph-t">Ekrani</div><div class="ph-s" id="screen-count">—</div></div>
+      <button class="btn btn-p" onclick="goTo('add-screen')">＋ Novi ekran</button>
+    </div>
+    <div class="cards-grid" id="screens-grid"></div>
+  </div>
+
+  <!-- ADD/EDIT BRAND -->
+  <div class="page" id="pg-add-brand">
+    <div class="ph">
+      <div><div class="ph-t" id="brand-form-title">Novi brand</div><div class="ph-s">Konfiguracija branda i igre</div></div>
+      <button class="btn btn-g" onclick="goTo('brands')">← Natrag</button>
+    </div>
+    <div class="fw">
+
+      <!-- BRAND IDENTITET -->
+      <div class="fs">
+        <div class="fs-t"><span class="fs-n">1</span> Brand identitet</div>
+
+        <!-- LOGO UPLOAD -->
+        <div class="fr f1" style="margin-bottom:16px;">
+          <div class="fg">
+            <label class="fl">Logo (slika)</label>
+            <div class="logo-upload-wrap">
+              <div class="logo-preview" id="logo-preview" onclick="document.getElementById('logo-file').click()">
+                <span id="logo-initials">?</span>
+              </div>
+              <div class="logo-upload-info">
+                <b>Klikni za upload slike</b><br>
+                PNG, JPG, SVG — preporučeno kvadratni format.<br>
+                <small style="opacity:.6">Sprema se kao base64 lokalno.</small>
+              </div>
+              <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogoUpload(this)">
+            </div>
+          </div>
+        </div>
+
+        <div class="fr">
+          <div class="fg"><label class="fl">Naziv branda</label><input type="text" class="fi" id="f-name" placeholder="npr. Franck" oninput="updateLogoInitials()"></div>
+          <div class="fg"><label class="fl">Tagline</label><input type="text" class="fi" id="f-tagline" placeholder="npr. Od 1892."></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Logo tekst</label><input type="text" class="fi" id="f-logo" placeholder="npr. Franck"></div>
+          <div class="fg"><label class="fl">Font branda</label>
+            <select class="fi" id="f-font">
+              <option value="Inter">Inter</option>
+              <option value="Fraunces">Fraunces (serif)</option>
+              <option value="Playfair Display">Playfair Display</option>
+              <option value="Bebas Neue">Bebas Neue</option>
+              <option value="Manrope">Manrope</option>
+            </select>
+          </div>
+        </div>
+        <div class="fr f3">
+          <div class="fg"><label class="fl">Primarna boja</label><div class="cw"><input type="color" id="cp1" value="#f5a823" oninput="csync(this,'ct1')"><input type="text" id="ct1" value="#f5a823" oninput="ctsync(this,'cp1')"></div></div>
+          <div class="fg"><label class="fl">Accent</label><div class="cw"><input type="color" id="cp2" value="#ffffff" oninput="csync(this,'ct2')"><input type="text" id="ct2" value="#ffffff" oninput="ctsync(this,'cp2')"></div></div>
+          <div class="fg"><label class="fl">Bg igre</label><div class="cw"><input type="color" id="cp3" value="#0c0c0e" oninput="csync(this,'ct3')"><input type="text" id="ct3" value="#0c0c0e" oninput="ctsync(this,'cp3')"></div></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Boja teksta</label><div class="cw"><input type="color" id="cp4" value="#ffffff" oninput="csync(this,'ct4')"><input type="text" id="ct4" value="#ffffff" oninput="ctsync(this,'cp4')"></div></div>
+          <div class="fg"><label class="fl">Nagrada (reward)</label><input type="text" class="fi" id="f-reward" placeholder="npr. −20% kupon"></div>
+        </div>
+      </div>
+
+      <!-- TIP IGRE -->
+      <div class="fs">
+        <div class="fs-t"><span class="fs-n">2</span> Tip igre</div>
+        <div class="gt-grid" id="gt-grid">
+          <div class="gt on" data-t="trivia" onclick="pickGame('trivia')"><div class="gi">🎯</div><div class="gl">Trivia Quiz</div><div class="gd">Pitanja &amp; odgovori</div></div>
+          <div class="gt" data-t="truefalse" onclick="pickGame('truefalse')"><div class="gi">✅</div><div class="gl">True / False</div><div class="gd">Brze tvrdnje</div></div>
+          <div class="gt" data-t="scramble" onclick="pickGame('scramble')"><div class="gi">🔤</div><div class="gl">Word Scramble</div><div class="gd">Složi ispremještano</div></div>
+          <div class="gt" data-t="memory" onclick="pickGame('memory')"><div class="gi">🧠</div><div class="gl">Memory Match</div><div class="gd">Pronađi parove</div></div>
+          <div class="gt" data-t="reaction" onclick="pickGame('reaction')"><div class="gi">⚡</div><div class="gl">Reaction</div><div class="gd">Klikni metu brzo</div></div>
+          <div class="gt" data-t="tap" onclick="pickGame('tap')"><div class="gi">👆</div><div class="gl">Tap Frenzy</div><div class="gd">Tapkaj što brže</div></div>
+          <div class="gt" data-t="spin" onclick="pickGame('spin')"><div class="gi">🎰</div><div class="gl">Spin &amp; Win</div><div class="gd">Zavrti kotač</div></div>
+          <div class="gt" data-t="scratch" onclick="pickGame('scratch')"><div class="gi">🎟️</div><div class="gl">Scratch Card</div><div class="gd">Grebi i osvoji</div></div>
+          <div class="gt" data-t="slots" onclick="pickGame('slots')"><div class="gi">🎲</div><div class="gl">Slot Machine</div><div class="gd">Spoji 3 simbola</div></div>
+        </div>
+      </div>
+
+      <!-- SADRŽAJ IGRE -->
+      <div class="fs">
+        <div class="fs-t"><span class="fs-n">3</span> Sadržaj igre</div>
+        <div id="game-form"></div>
+      </div>
+
+      <div class="fa">
+        <button class="btn btn-g" onclick="goTo('brands')">Odustani</button>
+        <button class="btn btn-p" onclick="saveBrand()">💾 Spremi brand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT SCREEN -->
+  <div class="page" id="pg-add-screen">
+    <div class="ph">
+      <div><div class="ph-t" id="screen-form-title">Novi ekran</div><div class="ph-s">Konfiguracija ekrana / tableta</div></div>
+      <button class="btn btn-g" onclick="goTo('screens')">← Natrag</button>
+    </div>
+    <div class="fw">
+      <div class="fs">
+        <div class="fs-t"><span class="fs-n">1</span> Info o ekranu</div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Naziv</label><input type="text" class="fi" id="sc-name" placeholder="npr. Vozač #1247"></div>
+          <div class="fg"><label class="fl">Lokacija</label><input type="text" class="fi" id="sc-loc" placeholder="npr. Zagreb centar"></div>
+        </div>
+      </div>
+      <div class="fs">
+        <div class="fs-t"><span class="fs-n">2</span> Dodijeli igrice</div>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <button class="btn btn-g btn-sm" onclick="toggleAllBrands()">Dodaj sve / Makni sve</button>
+        </div>
+        <div class="brand-checks" id="brand-checks"></div>
+        <p id="no-brands-msg" style="font-size:13px;color:var(--dim);display:none;">Nema konfiguriranih brandova. Prvo dodaj brand.</p>
+      </div>
+      <div class="fa">
+        <button class="btn btn-g" onclick="goTo('screens')">Odustani</button>
+        <button class="btn btn-p" onclick="saveScreen()">💾 Spremi ekran</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- GAME PLAYER -->
+<div id="player">
+  <div style="position:absolute;top:12px;left:12px;z-index:200;">
+    <button class="btn btn-g btn-sm" onclick="closePlayer()">← Natrag na dashboard</button>
+  </div>
+  <div id="player-inner" style="width:100%;height:100%;position:relative;"></div>
+</div>
+
+<div class="toast" id="toast"><span id="tmsg"></span></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════
+const BK='dp_brands_v2', SK='dp_screens_v1';
+const lB=()=>{try{return JSON.parse(localStorage.getItem(BK))||[];}catch{return[];}};
+const lS=()=>{try{return JSON.parse(localStorage.getItem(SK))||[];}catch{return[];}};
+const sB=d=>{localStorage.setItem(BK,JSON.stringify(d));cfPush('/brands',d);};
+const sS=d=>{localStorage.setItem(SK,JSON.stringify(d));cfPush('/screens',d);};
+
+// ═══════════════════════════════════════════════════════
+// CLOUDFLARE SYNC
+// ═══════════════════════════════════════════════════════
+// Fill these in after deploying the Worker:
+const CF_WORKER = '';   // e.g. 'https://driveplay-api.yourname.workers.dev'
+const CF_KEY    = '';   // API key you set via: wrangler secret put API_KEY
+
+function cfPush(path, data) {
+  if (!CF_WORKER || !CF_KEY) return;
+  fetch(CF_WORKER + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-API-Key': CF_KEY },
+    body: JSON.stringify(data),
+  }).then(r => {
+    if (!r.ok) console.warn('CF push failed:', r.status);
+    else showSyncDot(true);
+  }).catch(() => showSyncDot(false));
+}
+
+async function cfInit() {
+  if (!CF_WORKER) return;
+  try {
+    const [br, sc] = await Promise.all([
+      fetch(CF_WORKER + '/brands').then(r => r.text()),
+      fetch(CF_WORKER + '/screens').then(r => r.text()),
+    ]);
+    localStorage.setItem(BK, br);
+    localStorage.setItem(SK, sc);
+    showSyncDot(true);
+  } catch(e) {
+    console.warn('CF init pull failed — using local cache');
+    showSyncDot(false);
+  }
+}
+
+function showSyncDot(ok) {
+  const el = document.getElementById('cf-sync-dot');
+  if (!el) return;
+  el.title = ok ? 'Synced with cloud ✓' : 'Cloud sync unavailable';
+  el.style.background = ok ? '#22c55e' : '#ef4444';
+  el.style.display = CF_WORKER ? 'block' : 'none';
+}
+const uid=()=>Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+
+// ═══════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════
+let editBrandId=null, editScreenId=null, gameType='trivia', logoImg=null;
+
+function goTo(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('.ni[id]').forEach(x=>x.classList.remove('on'));
+  const map={brands:['pg-brands','ni-brands'],screens:['pg-screens','ni-screens'],'add-brand':['pg-add-brand','ni-ab'],'add-screen':['pg-add-screen','ni-as']};
+  const [pg,ni]=map[p]||[];
+  if(pg) document.getElementById(pg).classList.add('on');
+  if(ni) document.getElementById(ni).classList.add('on');
+  if(p==='brands'){renderBrands();editBrandId=null;}
+  else if(p==='screens'){renderScreens();editScreenId=null;}
+  else if(p==='add-brand'){if(!editBrandId){document.getElementById('brand-form-title').textContent='Novi brand';resetBrandForm();}renderGameForm();}
+  else if(p==='add-screen'){if(!editScreenId){document.getElementById('screen-form-title').textContent='Novi ekran';resetScreenForm();}renderBrandChecks();}
+}
+
+// ═══════════════════════════════════════════════════════
+// BRAND LIST
+// ═══════════════════════════════════════════════════════
+const GT_LABEL={trivia:'🎯 Trivia',truefalse:'✅ True/False',scramble:'🔤 Scramble',memory:'🧠 Memory',reaction:'⚡ Reaction',tap:'👆 Tap Frenzy',spin:'🎰 Spin',scratch:'🎟️ Scratch',slots:'🎲 Slots'};
+
+function renderBrands(){
+  const all=lB();
+  document.getElementById('brand-count').textContent=all.length?`${all.length} brand${all.length>1?'a':''}`:'Nema brandova';
+  const g=document.getElementById('brands-grid');
+  if(!all.length){g.innerHTML=`<div class="empty"><div class="ei">🎮</div><h3>Nema brandova</h3><p>Dodaj prvi brand i konfigurirај igru.</p><button class="btn btn-p" onclick="goTo('add-brand')">＋ Dodaj brand</button></div>`;return;}
+  g.innerHTML=all.map(b=>`
+    <div class="bc">
+      <div class="bc-strip" style="background:linear-gradient(90deg,${b.c.p},${b.c.a})"></div>
+      <div class="bc-body">
+        <div class="bc-head">
+          <div class="bc-icon" style="background:${b.c.p};color:${b.c.t};font-family:'${b.font}',sans-serif;" id="bci-${b.id}">
+            ${b.logoImg?`<img src="${b.logoImg}" alt="">`:`<span>${esc(b.logo||b.name).slice(0,2).toUpperCase()}</span>`}
+          </div>
+          <div>
+            <div class="bc-name">${esc(b.name)}</div>
+            <div class="bc-type">${GT_LABEL[b.game.type]||b.game.type}</div>
+          </div>
+        </div>
+        <div class="bc-rew">Nagrada: <b>${esc(b.game.reward||'—')}</b></div>
+        <div class="bc-acts">
+          <button class="btn btn-p btn-sm" onclick="playBrand('${b.id}')">▶ Test</button>
+          <button class="btn btn-g btn-sm" onclick="editBrand('${b.id}')">✎ Uredi</button>
+          <button class="btn btn-d btn-ic btn-sm" onclick="delBrand('${b.id}','${esc(b.name)}')">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function delBrand(id,name){
+  if(!confirm(`Obriši "${name}"?`)) return;
+  // remove from screens too
+  const screens=lS();
+  screens.forEach(s=>{s.brandIds=(s.brandIds||[]).filter(x=>x!==id);});
+  sS(screens);
+  sB(lB().filter(b=>b.id!==id));
+  renderBrands();toast('Brand obrisan.');
+}
+
+function editBrand(id){
+  editBrandId=id;
+  const b=lB().find(x=>x.id===id);if(!b)return;
+  document.getElementById('brand-form-title').textContent=`Uredi: ${b.name}`;
+  document.getElementById('f-name').value=b.name;
+  document.getElementById('f-tagline').value=b.tagline||'';
+  document.getElementById('f-logo').value=b.logo||'';
+  document.getElementById('f-font').value=b.font||'Inter';
+  document.getElementById('f-reward').value=b.game?.reward||'';
+  setCol('cp1','ct1',b.c.p);setCol('cp2','ct2',b.c.a);
+  setCol('cp3','ct3',b.c.bg);setCol('cp4','ct4',b.c.t);
+  logoImg=b.logoImg||null;
+  updateLogoPreview();
+  pickGame(b.game.type,b.game);
+  goTo('add-brand');
+}
+
+// ═══════════════════════════════════════════════════════
+// SCREEN LIST
+// ═══════════════════════════════════════════════════════
+function renderScreens(){
+  const all=lS();
+  const brands=lB();
+  document.getElementById('screen-count').textContent=all.length?`${all.length} ekran${all.length>1?'a':''}`:'Nema ekrana';
+  const g=document.getElementById('screens-grid');
+  if(!all.length){g.innerHTML=`<div class="empty"><div class="ei">🖥️</div><h3>Nema ekrana</h3><p>Dodaj ekran/tablet i dodijeli mu igrice.</p><button class="btn btn-p" onclick="goTo('add-screen')">＋ Dodaj ekran</button></div>`;return;}
+  g.innerHTML=all.map(s=>{
+    const assignedBrands=brands.filter(b=>(s.brandIds||[]).includes(b.id));
+    const isLive=s.stats?.lastSeen&&(Date.now()-s.stats.lastSeen)<300000;
+    const winRate=s.stats?.plays>0?Math.round((s.stats.wins||0)/s.stats.plays*100):0;
+    const lastSeen=s.stats?.lastSeen?relTime(s.stats.lastSeen):'—';
+    const kioskUrl=window.location.href.replace('dashboard.html','game_demo-2.html')+'?screen='+s.id;
+    return `
+    <div class="sc">
+      <div class="sc-head">
+        <div class="sc-info">
+          <div class="name">${esc(s.name)}</div>
+          <div class="loc">📍 ${esc(s.loc||'—')}</div>
+        </div>
+        <div class="sc-live ${isLive?'on':'off'}">${isLive?'● LIVE':'○ OFFLINE'}</div>
+      </div>
+      <div class="sc-brands">
+        ${assignedBrands.length?assignedBrands.map(b=>`
+          <div class="sc-brand-chip" style="background:${b.c.p};color:${b.c.t};font-family:'${b.font}',sans-serif;" title="${esc(b.name)}">
+            ${b.logoImg?`<img src="${b.logoImg}" alt="">`:`${esc(b.logo||b.name).slice(0,2).toUpperCase()}`}
+          </div>`).join(''):`<span style="font-size:11px;color:var(--dim);">Nema dodijeljenih igrica</span>`}
+      </div>
+      <div class="sc-stats">
+        <div class="sc-stat"><div class="v">${s.stats?.plays||0}</div><div class="l">Igranja</div></div>
+        <div class="sc-stat"><div class="v">${winRate}%</div><div class="l">Win rate</div></div>
+        <div class="sc-stat"><div class="v" style="font-size:13px;">${lastSeen}</div><div class="l">Zadnji put</div></div>
+      </div>
+      <div class="sc-acts">
+        <button class="btn btn-p btn-sm" onclick="copyLink('${encodeURIComponent(kioskUrl)}')">🔗 Link</button>
+        <button class="btn btn-g btn-sm" onclick="editScreen('${s.id}')">✎ Uredi</button>
+        <button class="btn btn-d btn-ic btn-sm" onclick="delScreen('${s.id}','${esc(s.name)}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function relTime(ts){
+  const d=Math.floor((Date.now()-ts)/1000);
+  if(d<60) return d+'s';
+  if(d<3600) return Math.floor(d/60)+'m';
+  if(d<86400) return Math.floor(d/3600)+'h';
+  return Math.floor(d/86400)+'d';
+}
+
+function copyLink(encoded){
+  const url=decodeURIComponent(encoded);
+  navigator.clipboard.writeText(url).then(()=>toast('Link kopiran! ✓')).catch(()=>toast('URL: '+url));
+}
+
+function delScreen(id,name){
+  if(!confirm(`Obriši ekran "${name}"?`)) return;
+  sS(lS().filter(s=>s.id!==id));
+  renderScreens();toast('Ekran obrisan.');
+}
+
+function editScreen(id){
+  editScreenId=id;
+  const s=lS().find(x=>x.id===id);if(!s)return;
+  document.getElementById('screen-form-title').textContent=`Uredi: ${s.name}`;
+  document.getElementById('sc-name').value=s.name;
+  document.getElementById('sc-loc').value=s.loc||'';
+  renderBrandChecks(s.brandIds||[]);
+  goTo('add-screen');
+}
+
+// ═══════════════════════════════════════════════════════
+// BRAND FORM
+// ═══════════════════════════════════════════════════════
+function resetBrandForm(){
+  ['f-name','f-tagline','f-logo','f-reward'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-font').value='Inter';
+  setCol('cp1','ct1','#f5a823');setCol('cp2','ct2','#ffffff');
+  setCol('cp3','ct3','#0c0c0e');setCol('cp4','ct4','#ffffff');
+  logoImg=null;updateLogoPreview();
+  pickGame('trivia');
+}
+
+function updateLogoInitials(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!logoImg) document.getElementById('logo-initials').textContent=name?name.slice(0,2).toUpperCase():'?';
+}
+
+function updateLogoPreview(){
+  const prev=document.getElementById('logo-preview');
+  if(logoImg){
+    prev.innerHTML=`<img src="${logoImg}" alt="">`;
+  } else {
+    const name=document.getElementById('f-name')?.value?.trim()||'';
+    prev.innerHTML=`<span id="logo-initials">${name?name.slice(0,2).toUpperCase():'?'}</span>`;
+  }
+}
+
+function handleLogoUpload(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    logoImg=e.target.result;
+    updateLogoPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function pickGame(type,ex){
+  gameType=type;
+  document.querySelectorAll('.gt').forEach(el=>el.classList.toggle('on',el.dataset.t===type));
+  renderGameForm(ex);
+}
+
+function renderGameForm(ex){
+  const c=document.getElementById('game-form');
+  if(gameType==='trivia'){
+    const qs=ex?.questions||[{q:'',opts:['','','',''],correct:0}];
+    c.innerHTML=`<div class="q-list" id="qlist">${qs.map((q,i)=>qHTML(i,q)).join('')}</div><button class="add-btn" onclick="addQ()">＋ Dodaj pitanje</button>`;
+  } else if(gameType==='truefalse'){
+    const items=ex?.items||[{s:'',a:true}];
+    c.innerHTML=`<p style="font-size:12px;color:var(--dim);margin-bottom:10px;">Unesi tvrdnje i označi je li svaka točna ili netočna.</p>
+      <div id="tf-list">${items.map((it,i)=>tfHTML(i,it)).join('')}</div>
+      <button class="add-btn" onclick="addTF()">＋ Dodaj tvrdnju</button>`;
+  } else if(gameType==='scramble'){
+    const words=ex?.words||[{word:'',hint:''}];
+    c.innerHTML=`<p style="font-size:12px;color:var(--dim);margin-bottom:10px;">Unesi riječi koje igrač mora složiti. Hint nije obavezan.</p>
+      <div id="sw-list">${words.map((w,i)=>scHTML(i,w)).join('')}</div>
+      <button class="add-btn" onclick="addSC()">＋ Dodaj riječ</button>`;
+  } else if(gameType==='memory'){
+    const items=ex?.items||['','','','','',''];
+    c.innerHTML=`<p style="font-size:12px;color:var(--dim);margin-bottom:10px;">Stavke koje se sparuju (svaka se pojavljuje 2× na ploči)</p>
+      <div class="mem-g" id="mlist">${items.map((v,i)=>`<div style="display:flex;gap:5px"><input class="fi" id="mi${i}" value="${esc(v)}" placeholder="Stavka ${i+1}"><button class="btn btn-d btn-ic btn-sm" onclick="this.parentElement.remove()">✕</button></div>`).join('')}</div>
+      <button class="add-btn" onclick="addMem()">＋ Dodaj stavku</button>`;
+  } else if(gameType==='reaction'){
+    c.innerHTML=`<div style="background:var(--bg);border-radius:8px;padding:14px;font-size:13px;color:var(--dim);line-height:1.6;">⚡ <b style="color:var(--tx)">Reaction Time</b> — igrač klikne bijelu metu. 3 runde, prosjek &lt;600ms = pobjeda. Postavi nagradu gore.</div>`;
+  } else if(gameType==='tap'){
+    c.innerHTML=`<div class="fr">
+      <div class="fg"><label class="fl">Cilj (broj tapova)</label><input type="number" class="fi" id="tap-target" value="${ex?.target||30}" min="5" max="200"></div>
+      <div class="fg"><label class="fl">Trajanje (sekunde)</label><input type="number" class="fi" id="tap-secs" value="${ex?.secs||5}" min="3" max="15"></div>
+    </div>`;
+  } else if(gameType==='spin'){
+    const prizes=ex?.prizes||[{l:'−20%',long:'−20% popust',p:'common'},{l:'−50%',long:'−50% popust',p:'rare'},{l:'FREE',long:'Besplatna dostava',p:'common'}];
+    c.innerHTML=`<div id="plist">${prizes.map((p,i)=>prizeHTML(i,p)).join('')}</div><button class="add-btn" onclick="addPrize()">＋ Dodaj nagradu</button>`;
+  } else if(gameType==='scratch'){
+    c.innerHTML=`<div class="fr f1"><div class="fg"><label class="fl">Tekst na kartici (prednja strana)</label><input type="text" class="fi" id="scratch-txt" value="${esc(ex?.cardText||'🎟️ Grebi i osvoji!')}" placeholder="Grebi i osvoji!"></div></div>
+      <div style="background:var(--bg);border-radius:8px;padding:14px;font-size:12px;color:var(--dim);">Scratch card <b style="color:var(--tx)">uvijek pobijedi</b> — igrač grebi da otkrije nagradu. Postavi nagradu gore.</div>`;
+  } else if(gameType==='slots'){
+    const syms=ex?.symbols||['🍋','🍒','⭐','💎','🔔','🍀'];
+    const wc=ex?.winCount||3;
+    c.innerHTML=`<p style="font-size:12px;color:var(--dim);margin-bottom:10px;">Simboli za bubnjeve (emoji ili kratki tekst, max 10):</p>
+      <div class="mem-g" id="slots-list">${syms.map((s,i)=>`<div style="display:flex;gap:5px"><input class="fi" id="sl${i}" value="${esc(s)}" placeholder="Simbol ${i+1}" style="font-size:18px;text-align:center;"><button class="btn btn-d btn-ic btn-sm" onclick="this.parentElement.remove()">✕</button></div>`).join('')}</div>
+      <button class="add-btn" onclick="addSlot()">＋ Dodaj simbol</button>
+      <div class="fr" style="margin-top:10px">
+        <div class="fg"><label class="fl">Uvjet pobjede</label>
+          <select class="fi" id="slots-win">
+            <option value="3" ${wc===3?'selected':''}>3 ista simbola (teže)</option>
+            <option value="2" ${wc===2?'selected':''}>2 ista simbola (lakše)</option>
+          </select>
+        </div>
+      </div>`;
+  }
+}
+
+// TRIVIA BUILDER
+function qHTML(i,q){
+  return`<div class="qi" id="qi${i}">
+    <div class="qi-h"><span class="qi-n">Pitanje ${i+1}</span><button class="btn btn-d btn-ic btn-sm" onclick="remQ(${i})">✕</button></div>
+    <input type="text" class="fi" id="qq${i}" value="${esc(q.q||'')}" placeholder="Upiši pitanje..." style="margin-bottom:7px">
+    <div class="opts-g">${['A','B','C','D'].map((l,j)=>`
+      <div class="opt-r">
+        <span class="opt-l">${l}</span>
+        <input type="text" class="fi" id="qo${i}_${j}" value="${esc((q.opts||[])[j]||'')}" placeholder="Odg. ${l}..." style="flex:1">
+        <button class="cbtn${q.correct===j?' on':''}" id="qc${i}_${j}" onclick="setCorrect(${i},${j})"></button>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+function addQ(){const l=document.getElementById('qlist');const i=l.children.length;l.insertAdjacentHTML('beforeend',qHTML(i,{q:'',opts:['','','',''],correct:0}));}
+function remQ(i){const e=document.getElementById(`qi${i}`);if(e)e.remove();reindexQ();}
+function reindexQ(){document.querySelectorAll('.qi').forEach((el,i)=>{el.id=`qi${i}`;el.querySelector('.qi-n').textContent=`Pitanje ${i+1}`;el.querySelector('[onclick*="remQ"]').setAttribute('onclick',`remQ(${i})`);el.querySelector('input[id^="qq"]').id=`qq${i}`;for(let j=0;j<4;j++){const oi=el.querySelectorAll('input[id^="qo"]')[j];if(oi)oi.id=`qo${i}_${j}`;const ci=el.querySelectorAll('.cbtn')[j];if(ci){ci.id=`qc${i}_${j}`;ci.setAttribute('onclick',`setCorrect(${i},${j})`);}}});}
+function setCorrect(qi,j){for(let k=0;k<4;k++){const b=document.getElementById(`qc${qi}_${k}`);if(b)b.classList.toggle('on',k===j);}}
+
+// TRUE/FALSE BUILDER
+function tfHTML(i,it){
+  return`<div class="tf-item" id="tfi${i}">
+    <input type="text" class="fi" id="tft${i}" value="${esc(it.s||'')}" placeholder="Tvrdnja..." style="flex:1">
+    <button class="tf-toggle" id="tfa${i}" onclick="toggleTF(${i})" style="background:${it.a?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)'};color:${it.a?'#22c55e':'#ef4444'};border:1px solid ${it.a?'rgba(34,197,94,.3)':'rgba(239,68,68,.3)'};">${it.a?'✓ TOČNO':'✗ NETOČNO'}</button>
+    <button class="btn btn-d btn-ic btn-sm" onclick="document.getElementById('tfi${i}').remove()">✕</button>
+  </div>`;
+}
+function addTF(){const l=document.getElementById('tf-list');const i=l.children.length;l.insertAdjacentHTML('beforeend',tfHTML(i,{s:'',a:true}));}
+function toggleTF(i){
+  const btn=document.getElementById(`tfa${i}`);
+  const isTrue=btn.textContent.includes('TOČNO');
+  const newVal=!isTrue;
+  btn.textContent=newVal?'✓ TOČNO':'✗ NETOČNO';
+  btn.style.background=newVal?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)';
+  btn.style.color=newVal?'#22c55e':'#ef4444';
+  btn.style.border=`1px solid ${newVal?'rgba(34,197,94,.3)':'rgba(239,68,68,.3)'}`;
+}
+
+// SCRAMBLE BUILDER
+function scHTML(i,w){
+  return`<div class="fr" id="sci${i}">
+    <div class="fg"><label class="fl">Riječ</label><input type="text" class="fi" id="scw${i}" value="${esc(w.word||'')}" placeholder="npr. ZAGREB" style="text-transform:uppercase"></div>
+    <div class="fg"><label class="fl">Hint (opcionalno)</label><input type="text" class="fi" id="sch${i}" value="${esc(w.hint||'')}" placeholder="npr. Grad u Hrvatskoj"></div>
+    <button class="btn btn-d btn-ic btn-sm" onclick="document.getElementById('sci${i}').remove()" style="align-self:flex-end;margin-bottom:1px;">✕</button>
+  </div>`;
+}
+function addSC(){const l=document.getElementById('sw-list');const i=l.children.length;l.insertAdjacentHTML('beforeend',scHTML(i,{word:'',hint:''}));}
+
+// MEMORY / SPIN / SLOTS
+function addMem(){const l=document.getElementById('mlist');const i=l.children.length;const d=document.createElement('div');d.style.cssText='display:flex;gap:5px';d.innerHTML=`<input class="fi" id="mi${i}" placeholder="Stavka ${i+1}"><button class="btn btn-d btn-ic btn-sm" onclick="this.parentElement.remove()">✕</button>`;l.appendChild(d);}
+function prizeHTML(i,p){return`<div class="pr" id="pr${i}"><input type="text" class="fi" id="pl${i}" value="${esc(p.l||'')}" placeholder="Kratki (npr. −20%)" style="width:110px;flex-shrink:0"><input type="text" class="fi" id="pll${i}" value="${esc(p.long||'')}" placeholder="Puni opis nagrade..."><select class="fi" id="pp${i}" style="width:95px;flex-shrink:0"><option value="common" ${p.p==='common'?'selected':''}>Common</option><option value="rare" ${p.p==='rare'?'selected':''}>Rare</option><option value="epic" ${p.p==='epic'?'selected':''}>Epic</option></select><button class="btn btn-d btn-ic btn-sm" onclick="document.getElementById('pr${i}').remove()">✕</button></div>`;}
+function addPrize(){const l=document.getElementById('plist');const i=l.children.length;l.insertAdjacentHTML('beforeend',prizeHTML(i,{l:'',long:'',p:'common'}));}
+function addSlot(){const l=document.getElementById('slots-list');const i=l.children.length;const d=document.createElement('div');d.style.cssText='display:flex;gap:5px';d.innerHTML=`<input class="fi" id="sl${i}" placeholder="Simbol" style="font-size:18px;text-align:center;"><button class="btn btn-d btn-ic btn-sm" onclick="this.parentElement.remove()">✕</button>`;l.appendChild(d);}
+
+// COLOR HELPERS
+function setCol(pid,tid,v){const p=document.getElementById(pid),t=document.getElementById(tid);if(p)p.value=v;if(t)t.value=v;}
+function csync(el,tid){const t=document.getElementById(tid);if(t)t.value=el.value;}
+function ctsync(el,pid){if(/^#[0-9a-f]{6}$/i.test(el.value.trim())){const p=document.getElementById(pid);if(p)p.value=el.value.trim();}}
+
+// ═══════════════════════════════════════════════════════
+// SAVE BRAND
+// ═══════════════════════════════════════════════════════
+function saveBrand(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){toast('Upiši naziv branda!');return;}
+  const game=collectGame();if(!game)return;
+  const brand={
+    id:editBrandId||uid(),name,
+    tagline:document.getElementById('f-tagline').value.trim(),
+    logo:document.getElementById('f-logo').value.trim()||name,
+    font:document.getElementById('f-font').value,
+    logoImg:logoImg||null,
+    c:{p:document.getElementById('cp1').value,a:document.getElementById('cp2').value,bg:document.getElementById('cp3').value,t:document.getElementById('cp4').value},
+    game,
+  };
+  const all=lB();
+  if(editBrandId){const idx=all.findIndex(b=>b.id===editBrandId);if(idx>-1)all[idx]=brand;}else all.push(brand);
+  sB(all);editBrandId=null;logoImg=null;
+  toast(`"${name}" spremljeno ✓`);goTo('brands');
+}
+
+function collectGame(){
+  const reward=document.getElementById('f-reward').value.trim();
+  if(gameType==='trivia'){
+    const qs=[];
+    document.querySelectorAll('.qi').forEach((el,i)=>{
+      const q=document.getElementById(`qq${i}`)?.value?.trim()||'';
+      const opts=[0,1,2,3].map(j=>document.getElementById(`qo${i}_${j}`)?.value?.trim()||'');
+      const cb=el.querySelector('.cbtn.on');
+      qs.push({q,opts,correct:cb?parseInt(cb.id.split('_')[1]):0});
+    });
+    if(!qs.length||!qs[0].q){toast('Dodaj barem jedno pitanje!');return null;}
+    return{type:'trivia',reward,questions:qs};
+  }
+  if(gameType==='truefalse'){
+    const items=[];
+    document.querySelectorAll('#tf-list .tf-item').forEach((_,i)=>{
+      const s=document.getElementById(`tft${i}`)?.value?.trim()||'';
+      const btn=document.getElementById(`tfa${i}`);
+      const a=btn?btn.textContent.includes('TOČNO'):true;
+      if(s)items.push({s,a});
+    });
+    if(!items.length){toast('Dodaj barem jednu tvrdnju!');return null;}
+    return{type:'truefalse',reward,items};
+  }
+  if(gameType==='scramble'){
+    const words=[];
+    document.querySelectorAll('#sw-list .fr').forEach((_,i)=>{
+      const word=document.getElementById(`scw${i}`)?.value?.trim().toUpperCase()||'';
+      const hint=document.getElementById(`sch${i}`)?.value?.trim()||'';
+      if(word)words.push({word,hint});
+    });
+    if(!words.length){toast('Dodaj barem jednu riječ!');return null;}
+    return{type:'scramble',reward,words};
+  }
+  if(gameType==='memory'){
+    const items=[...document.querySelectorAll('#mlist input')].map(x=>x.value.trim()).filter(Boolean);
+    if(items.length<2){toast('Dodaj barem 2 stavke!');return null;}
+    return{type:'memory',reward,items};
+  }
+  if(gameType==='reaction') return{type:'reaction',reward};
+  if(gameType==='tap'){
+    return{type:'tap',reward,target:parseInt(document.getElementById('tap-target').value)||30,secs:parseInt(document.getElementById('tap-secs').value)||5};
+  }
+  if(gameType==='spin'){
+    const prizes=[];
+    document.querySelectorAll('#plist .pr').forEach((_,i)=>{
+      const l=document.getElementById(`pl${i}`)?.value?.trim()||'';
+      const long=document.getElementById(`pll${i}`)?.value?.trim()||l;
+      const p=document.getElementById(`pp${i}`)?.value||'common';
+      if(l)prizes.push({l,long,p});
+    });
+    if(prizes.length<2){toast('Dodaj barem 2 nagrade!');return null;}
+    return{type:'spin',reward,prizes};
+  }
+  if(gameType==='scratch'){
+    return{type:'scratch',reward,cardText:document.getElementById('scratch-txt')?.value||'Grebi i osvoji!'};
+  }
+  if(gameType==='slots'){
+    const symbols=[...document.querySelectorAll('#slots-list input')].map(x=>x.value.trim()).filter(Boolean);
+    if(symbols.length<3){toast('Dodaj barem 3 simbola!');return null;}
+    const winCount=parseInt(document.getElementById('slots-win')?.value)||3;
+    return{type:'slots',reward,symbols,winCount};
+  }
+  return{type:gameType,reward};
+}
+
+// ═══════════════════════════════════════════════════════
+// SCREEN FORM
+// ═══════════════════════════════════════════════════════
+function resetScreenForm(){
+  document.getElementById('sc-name').value='';
+  document.getElementById('sc-loc').value='';
+}
+function renderBrandChecks(selected=[]){
+  const brands=lB();
+  const container=document.getElementById('brand-checks');
+  const msg=document.getElementById('no-brands-msg');
+  if(!brands.length){container.innerHTML='';msg.style.display='block';return;}
+  msg.style.display='none';
+  container.innerHTML=brands.map(b=>`
+    <div class="brand-check-item ${selected.includes(b.id)?'checked':''}" id="bcheck-${b.id}" onclick="toggleBrandCheck('${b.id}')">
+      <input type="checkbox" ${selected.includes(b.id)?'checked':''}>
+      <div class="brand-check-box">${selected.includes(b.id)?'✓':''}</div>
+      <div style="width:28px;height:28px;border-radius:6px;background:${b.c.p};color:${b.c.t};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;overflow:hidden;">
+        ${b.logoImg?`<img src="${b.logoImg}" style="width:100%;height:100%;object-fit:cover;" alt="">`:`${esc(b.logo||b.name).slice(0,2).toUpperCase()}`}
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;">${esc(b.name)}</div>
+        <div style="font-size:11px;color:var(--dim);">${GT_LABEL[b.game.type]||b.game.type} · ${esc(b.game.reward||'—')}</div>
+      </div>
+    </div>`).join('');
+}
+function toggleBrandCheck(id){
+  const el=document.getElementById(`bcheck-${id}`);
+  el.classList.toggle('checked');
+  el.querySelector('.brand-check-box').textContent=el.classList.contains('checked')?'✓':'';
+}
+function toggleAllBrands(){
+  const items=document.querySelectorAll('.brand-check-item');
+  const anyChecked=[...items].some(x=>x.classList.contains('checked'));
+  items.forEach(el=>{
+    el.classList.toggle('checked',!anyChecked);
+    el.querySelector('.brand-check-box').textContent=!anyChecked?'✓':'';
+  });
+}
+function saveScreen(){
+  const name=document.getElementById('sc-name').value.trim();
+  if(!name){toast('Upiši naziv ekrana!');return;}
+  const loc=document.getElementById('sc-loc').value.trim();
+  const brandIds=[...document.querySelectorAll('.brand-check-item.checked')].map(el=>el.id.replace('bcheck-',''));
+  const all=lS();
+  const existing=editScreenId?all.find(s=>s.id===editScreenId):null;
+  const screen={
+    id:editScreenId||uid(),name,loc,brandIds,
+    stats:existing?.stats||{plays:0,wins:0,lastSeen:null}
+  };
+  if(editScreenId){const idx=all.findIndex(s=>s.id===editScreenId);if(idx>-1)all[idx]=screen;}else all.push(screen);
+  sS(all);editScreenId=null;
+  toast(`Ekran "${name}" spremljen ✓`);goTo('screens');
+}
+
+// ═══════════════════════════════════════════════════════
+// GAME PLAYER
+// ═══════════════════════════════════════════════════════
+let ptimer=null,pints=[];
+
+function playBrand(id){
+  const b=lB().find(x=>x.id===id);if(!b)return;
+  document.getElementById('player').classList.add('on');
+  buildPlayer(b);
+}
+function closePlayer(){
+  document.getElementById('player').classList.remove('on');
+  ptimer&&clearTimeout(ptimer);pints.forEach(clearInterval);pints=[];
+}
+
+function buildPlayer(b){
+  const root=document.getElementById('player-inner');
+  root.innerHTML='';
+  const {p,a,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  root.style.cssText=`width:100%;height:100%;background:${bg};color:${t};font-family:${ff};display:flex;flex-direction:column;`;
+
+  // topbar
+  const tb=mk('div',`display:flex;justify-content:space-between;align-items:center;padding:14px 28px;border-bottom:1px solid ${p}22;flex-shrink:0;`);
+  tb.innerHTML=`<button onclick="closePlayer()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:${t};padding:6px 14px;border-radius:999px;font-size:12px;cursor:pointer;font-family:inherit;">← Back</button>
+    <div style="text-align:center;">
+      <div style="font-weight:800;font-size:20px;color:${p};font-family:${ff};">${b.logoImg?`<img src="${b.logoImg}" style="height:36px;object-fit:contain;" alt="${esc(b.logo)}">`:`${esc(b.logo||b.name)}`}</div>
+      ${b.tagline?`<div style="font-size:10px;opacity:.55;margin-top:2px;">${esc(b.tagline)}</div>`:''}
+    </div>
+    <div id="gp-prog" style="font-size:11px;padding:5px 12px;border-radius:999px;background:${p}22;color:${p};font-weight:600;">—</div>`;
+  root.appendChild(tb);
+
+  const body=mk('div','flex:1;position:relative;overflow:hidden;');
+  body.id='game-body';
+  root.appendChild(body);
+
+  // win/lose overlays
+  const win=mk('div',`position:absolute;inset:0;background:rgba(12,12,14,.93);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;text-align:center;padding:40px;backdrop-filter:blur(16px);animation:fadeIn .4s;`);
+  win.id='pg-win';
+  win.innerHTML=`<div id="pg-wi" style="width:92px;height:92px;border-radius:50%;background:${p};color:${bg};display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:20px;animation:bounce .5s;">★</div>
+    <div style="font-family:'Fraunces',serif;font-size:44px;font-weight:800;line-height:1;margin-bottom:8px;">Bravo!</div>
+    <div id="pg-prize" style="font-size:21px;font-weight:700;color:${p};margin-bottom:8px;">${esc(b.game.reward||'')}</div>
+    <p style="font-size:13px;opacity:.65;margin-bottom:24px;">Skeniraj QR i iskoristi nagradu.</p>
+    <div style="display:flex;align-items:center;gap:20px;padding:16px 24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:13px;margin-bottom:22px;">
+      <div id="pg-qr" style="width:90px;height:90px;background:white;border-radius:9px;padding:7px;"></div>
+      <div><div id="pg-code" style="font-size:19px;font-weight:700;letter-spacing:2px;color:${p};">—</div><div style="font-size:11px;opacity:.5;margin-top:3px;max-width:200px;line-height:1.4;">Vrijedi 30 dana od aktivacije.</div></div>
+    </div>
+    <button onclick="closePlayer()" style="background:${p};color:${bg};padding:10px 26px;border-radius:7px;border:none;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;">Zatvori ×</button>`;
+  root.appendChild(win);
+
+  const lose=mk('div','position:absolute;inset:0;background:rgba(12,12,14,.96);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;text-align:center;padding:40px;animation:fadeIn .4s;');
+  lose.id='pg-lose';
+  lose.innerHTML=`<div style="width:92px;height:92px;border-radius:50%;background:#ef4444;color:white;display:flex;align-items:center;justify-content:center;font-size:40px;margin-bottom:20px;animation:bounce .5s;">✗</div>
+    <div style="font-family:'Fraunces',serif;font-size:44px;font-weight:800;margin-bottom:8px;">Skoro!</div>
+    <p style="font-size:13px;opacity:.65;margin-bottom:24px;">Pokušaj ponovo!</p>
+    <button onclick="closePlayer()" style="background:${p};color:${bg};padding:10px 26px;border-radius:7px;border:none;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;">Zatvori ×</button>`;
+  root.appendChild(lose);
+
+  // launch game
+  const engines={trivia:pTrivia,truefalse:pTrueFalse,scramble:pScramble,memory:pMemory,reaction:pReaction,tap:pTap,spin:pSpin,scratch:pScratch,slots:pSlots};
+  (engines[b.game.type]||pTrivia)(b);
+}
+
+function mk(tag,css,html){const e=document.createElement(tag);e.style.cssText=css||'';if(html)e.innerHTML=html;return e;}
+function gprog(t){const e=document.getElementById('gp-prog');if(e)e.textContent=t;}
+function showWin(b){
+  const code=rcode(b.name);
+  const prize=document.getElementById('pg-prize');if(prize)prize.textContent=b.game.reward||'';
+  document.getElementById('pg-code').textContent=code;
+  document.getElementById('pg-qr').innerHTML=fakeQR(code);
+  document.getElementById('pg-win').style.display='flex';
+  confetti(b.c.p);
+}
+function showLose(){document.getElementById('pg-lose').style.display='flex';}
+
+// ── TRIVIA ────────────────────────────────────────────
+function pTrivia(b){
+  const {p,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  const qs=b.game.questions||[];let idx=0,score=0;
+  function render(){
+    gprog(`Pitanje ${idx+1} / ${qs.length}`);
+    const q=qs[idx];const opts=q.opts||q.options||[];
+    document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;justify-content:center;padding:28px 8%;position:relative;">
+      <div style="position:absolute;top:-10px;left:5%;font-family:'Playfair Display',serif;font-size:140px;color:${p}08;line-height:1;font-style:italic;">"</div>
+      <div style="font-family:${ff};font-size:clamp(18px,2.8vw,34px);font-weight:700;text-align:center;margin-bottom:26px;line-height:1.3;max-width:820px;margin-left:auto;margin-right:auto;position:relative;">${esc(q.q)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;max-width:740px;margin:0 auto;width:100%;position:relative;">
+        ${opts.map((opt,j)=>`<button id="to${j}" onclick="window._ta(${j})" style="padding:14px 18px;background:rgba(255,255,255,.04);border:2px solid rgba(255,255,255,.08);border-radius:8px;font-size:14px;color:${t};cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;font-family:${ff};transition:all .2s;width:100%;">
+          <span style="width:28px;height:28px;border-radius:50%;background:${p}33;color:${p};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;flex-shrink:0;">${String.fromCharCode(65+j)}</span>${esc(opt)}</button>`).join('')}
+      </div></div>`;
+    window._ta=chosen=>{
+      document.querySelectorAll('[id^="to"]').forEach(x=>x.style.pointerEvents='none');
+      const cb=document.getElementById(`to${q.correct}`),wb=document.getElementById(`to${chosen}`);
+      if(cb)cb.style.cssText+=`;background:${p}33;border-color:${p};`;
+      if(chosen!==q.correct&&wb)wb.style.cssText+=`;background:rgba(239,68,68,.15);border-color:#ef4444;`;
+      if(chosen===q.correct)score++;
+      ptimer=setTimeout(()=>{idx++;idx>=qs.length?(score>=Math.ceil(qs.length/2)?showWin(b):showLose()):render();},1400);
+    };
+  }
+  render();
+}
+
+// ── TRUE/FALSE ────────────────────────────────────────
+function pTrueFalse(b){
+  const {p,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  const items=b.game.items||[];let idx=0,score=0;
+  function render(){
+    gprog(`${idx+1} / ${items.length}`);
+    const it=items[idx];
+    document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:28px;">
+      <div style="font-family:${ff};font-size:clamp(18px,3vw,36px);font-weight:700;text-align:center;max-width:700px;line-height:1.3;">"${esc(it.s)}"</div>
+      <div style="display:flex;gap:18px;">
+        <button id="tf-t" onclick="window._tf(true)" style="padding:22px 52px;background:rgba(34,197,94,.12);border:3px solid #22c55e;border-radius:11px;color:#22c55e;font-family:${ff};font-size:22px;font-weight:800;cursor:pointer;transition:all .2s;">✓ TOČNO</button>
+        <button id="tf-f" onclick="window._tf(false)" style="padding:22px 52px;background:rgba(239,68,68,.12);border:3px solid #ef4444;border-radius:11px;color:#ef4444;font-family:${ff};font-size:22px;font-weight:800;cursor:pointer;transition:all .2s;">✗ NETOČNO</button>
+      </div></div>`;
+    window._tf=ans=>{
+      document.getElementById('tf-t').style.pointerEvents='none';
+      document.getElementById('tf-f').style.pointerEvents='none';
+      const correct=ans===it.a;
+      if(correct)score++;
+      const chosen=document.getElementById(ans?'tf-t':'tf-f');
+      chosen.style.background=correct?'rgba(34,197,94,.4)':'rgba(239,68,68,.4)';
+      if(!correct){const cb=document.getElementById(it.a?'tf-t':'tf-f');cb.style.background='rgba(34,197,94,.3)';}
+      ptimer=setTimeout(()=>{idx++;idx>=items.length?(score>=Math.ceil(items.length/2)?showWin(b):showLose()):render();},1200);
+    };
+  }
+  render();
+}
+
+// ── SCRAMBLE ──────────────────────────────────────────
+function pScramble(b){
+  const {p,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  const words=b.game.words||[];let idx=0,score=0;
+  function scramble(w){const a=w.split('');for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}if(a.join('')===w&&a.length>1)[a[0],a[1]]=[a[1],a[0]];return a.join('');}
+  function render(){
+    gprog(`${idx+1} / ${words.length}`);
+    const w=words[idx];const sc=scramble(w.word);let tl=15;
+    document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:18px;">
+      ${w.hint?`<div style="font-size:12px;opacity:.6;letter-spacing:1px;text-transform:uppercase;">Hint: ${esc(w.hint)}</div>`:''}
+      <div style="display:flex;gap:10px;margin:6px 0;">
+        ${sc.split('').map(c=>`<div style="width:54px;height:62px;background:${p}22;border:2px solid ${p}66;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:${ff};font-size:30px;font-weight:800;color:${p};">${c}</div>`).join('')}
+      </div>
+      <input type="text" id="sc-in" placeholder="Upiši odgovor..." maxlength="${w.word.length}"
+        style="padding:12px 22px;font-size:22px;font-weight:700;text-align:center;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.15);border-radius:9px;color:${t};font-family:${ff};outline:none;width:100%;max-width:380px;text-transform:uppercase;"
+        oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter')window._sc_submit()">
+      <button onclick="window._sc_submit()" style="padding:12px 36px;background:${p};color:${bg};border:none;border-radius:7px;font-family:${ff};font-size:16px;font-weight:800;cursor:pointer;">Potvrdi ✓</button>
+      <div id="sc-fb" style="font-size:15px;font-weight:600;min-height:22px;"></div>
+      <div style="font-size:12px;opacity:.5;">⏱ <span id="sc-t">${tl}</span>s</div>
+    </div>`;
+    document.getElementById('sc-in').focus();
+    const ti=setInterval(()=>{tl--;const e=document.getElementById('sc-t');if(e)e.textContent=tl;if(tl<=0){clearInterval(ti);fbAndNext(false,w.word);}},1000);
+    pints.push(ti);
+    window._sc_submit=()=>{
+      clearInterval(ti);
+      const ans=document.getElementById('sc-in')?.value?.trim();
+      fbAndNext(ans?.toUpperCase()===w.word.toUpperCase(),w.word);
+    };
+  }
+  function fbAndNext(correct,word){
+    const fb=document.getElementById('sc-fb');
+    if(fb){fb.textContent=correct?'✓ Točno!':'✗ Odgovor: '+word;fb.style.color=correct?'#22c55e':'#ef4444';}
+    if(correct)score++;
+    ptimer=setTimeout(()=>{idx++;idx>=words.length?(score>=Math.ceil(words.length/2)?showWin(b):showLose()):render();},1500);
+  }
+  render();
+}
+
+// ── MEMORY ────────────────────────────────────────────
+function pMemory(b){
+  const {p,bg}=b.c;
+  const items=b.game.items||['A','B','C','D'];
+  const deck=[...items,...items].sort(()=>Math.random()-.5);
+  const cols=Math.min(6,Math.max(4,Math.ceil(Math.sqrt(deck.length))));
+  let flipped=[],matched=0,moves=0,blocked=false,start=Date.now();
+  gprog(`0 / ${items.length} parova`);
+  document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 28px;">
+    <div style="display:flex;gap:30px;margin-bottom:12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:${p};">
+      <span>Pokušaji <b id="mm" style="font-size:17px;margin-left:3px;">0</b></span>
+      <span>Parovi <b id="mp" style="font-size:17px;margin-left:3px;">0/${items.length}</b></span>
+      <span>Vrijeme <b id="mt" style="font-size:17px;margin-left:3px;">0s</b></span>
+    </div>
+    <div id="mgrid" style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:7px;max-width:660px;width:100%;"></div>
+  </div>`;
+  const grid=document.getElementById('mgrid');
+  deck.forEach((v)=>{
+    const c=document.createElement('div');
+    c.style.cssText=`aspect-ratio:1;border-radius:8px;border:2px solid ${p}44;background:${p}1a;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;font-size:13px;color:transparent;transition:all .3s;`;
+    c.dataset.v=v;c.onclick=()=>flip(c);grid.appendChild(c);
+  });
+  const ti=setInterval(()=>{const e=document.getElementById('mt');if(e)e.textContent=Math.floor((Date.now()-start)/1000)+'s';},300);
+  pints.push(ti);
+  function flip(c){
+    if(blocked||c.dataset.m||c.dataset.f)return;if(flipped.length>=2)return;
+    c.style.cssText=`aspect-ratio:1;border-radius:8px;border:2px solid ${p};background:${p};display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;font-size:13px;color:${bg};transition:all .3s;`;
+    c.textContent=c.dataset.v;c.dataset.f='1';flipped.push(c);
+    if(flipped.length===2){
+      moves++;document.getElementById('mm').textContent=moves;blocked=true;
+      if(flipped[0].dataset.v===flipped[1].dataset.v){
+        flipped.forEach(x=>{x.style.cssText=`aspect-ratio:1;border-radius:8px;border:2px solid #22c55e;background:#22c55e22;display:flex;align-items:center;justify-content:center;cursor:default;font-weight:800;font-size:13px;color:#22c55e;transition:all .3s;`;x.dataset.m='1';delete x.dataset.f;});
+        matched++;document.getElementById('mp').textContent=`${matched}/${items.length}`;gprog(`${matched} / ${items.length} parova`);
+        flipped=[];blocked=false;
+        if(matched===items.length){clearInterval(ti);setTimeout(()=>showWin(b),600);}
+      }else{setTimeout(()=>{flipped.forEach(x=>{x.style.cssText=`aspect-ratio:1;border-radius:8px;border:2px solid ${p}44;background:${p}1a;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;font-size:13px;color:transparent;transition:all .3s;`;x.textContent='';delete x.dataset.f;});flipped=[];blocked=false;},900);}
+    }
+  }
+}
+
+// ── REACTION ──────────────────────────────────────────
+function pReaction(b){
+  const {p,bg,t}=b.c;let round=0,times=[],state='idle';
+  document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 48px;">
+    <div id="rs" style="font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,64px);letter-spacing:3px;margin-bottom:8px;">GET READY</div>
+    <div id="ri" style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;opacity:.6;">ČEKAJ BIJELU METU</div>
+    <div id="rarena" onclick="window._rclick()" style="width:100%;max-width:700px;aspect-ratio:16/9;background:rgba(255,255,255,.04);border:3px solid ${p}44;border-radius:11px;position:relative;cursor:pointer;overflow:hidden;">
+      <div id="rtgt" style="display:none;position:absolute;width:84px;height:84px;border-radius:50%;background:white;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:${bg};cursor:pointer;box-shadow:0 0 36px rgba(255,255,255,.5),inset 0 0 0 4px ${p};animation:pop .15s;">CLICK!</div>
+    </div>
+    <div id="rtimes" style="margin-top:12px;font-size:12px;font-weight:600;color:${p};min-height:18px;"></div>
+  </div>`;
+  function next(){
+    round++;if(round>3){finish();return;}
+    gprog(`Round ${round} / 3`);
+    document.getElementById('rs').textContent='GET READY';document.getElementById('ri').textContent='ČEKAJ BIJELU METU';
+    document.getElementById('rarena').style.borderColor=`${p}44`;document.getElementById('rtgt').style.display='none';
+    state='waiting';let ts;
+    ptimer=setTimeout(()=>{
+      const trg=document.getElementById('rtgt'),ar=document.getElementById('rarena');
+      const w=ar.clientWidth-100,h=ar.clientHeight-100;
+      trg.style.left=(20+Math.random()*(w-20))+'px';trg.style.top=(20+Math.random()*(h-20))+'px';
+      trg.style.display='flex';ar.style.borderColor=p;
+      document.getElementById('rs').textContent='KLIKNI!';document.getElementById('ri').textContent='';
+      ts=Date.now();state='ready';window._rts=ts;
+    },1500+Math.random()*2500);
+    window._rclick=()=>{
+      if(state==='waiting'){clearTimeout(ptimer);document.getElementById('rs').textContent='PRERANO!';ptimer=setTimeout(next,1500);return;}
+      if(state!=='ready')return;
+      const ms=Date.now()-window._rts;times.push(ms);
+      document.getElementById('rtgt').style.display='none';document.getElementById('rarena').style.borderColor=`${p}44`;
+      document.getElementById('rs').textContent=`${ms}ms`;document.getElementById('ri').textContent='DOBRO! SLJEDEĆA...';
+      document.getElementById('rtimes').textContent=`Vremena: ${times.join('ms · ')}ms`;
+      state='idle';ptimer=setTimeout(next,1800);
+    };
+  }
+  function finish(){const avg=times.reduce((a,x)=>a+x,0)/times.length;avg<600?showWin(b):showLose();}
+  next();
+}
+
+// ── TAP FRENZY ────────────────────────────────────────
+function pTap(b){
+  const {p,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  const target=b.game.target||30,secs=b.game.secs||5;
+  let taps=0,running=false;
+  gprog(`Cilj: ${target} tapova`);
+  document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;">
+    <div style="font-family:${ff};font-size:17px;font-weight:700;opacity:.7;">Tapkaj što brže možeš!</div>
+    <div style="position:relative;width:100%;max-width:560px;height:7px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;">
+      <div id="tap-bar" style="height:100%;background:${p};border-radius:4px;width:100%;transition:width linear;"></div>
+    </div>
+    <div id="tap-cnt" style="font-family:'Fraunces',serif;font-size:76px;font-weight:800;color:${p};line-height:1;">${target}</div>
+    <div style="font-size:12px;opacity:.5;">tapova preostalo</div>
+    <button id="tap-btn" onclick="window._tap()" style="width:190px;height:190px;border-radius:50%;background:${p};color:${bg};border:none;cursor:pointer;font-family:${ff};font-size:26px;font-weight:800;transition:transform .05s;box-shadow:0 8px 36px ${p}66;user-select:none;-webkit-user-select:none;">TAP!</button>
+    <div id="tap-res" style="font-size:13px;font-weight:600;color:${p};min-height:18px;"></div>
+  </div>`;
+  window._tap=()=>{
+    if(!running){
+      running=true;
+      document.getElementById('tap-bar').style.transition=`width ${secs}s linear`;
+      setTimeout(()=>document.getElementById('tap-bar').style.width='0%',50);
+      const ti=setInterval(()=>{
+        secs>0&&secs--;
+        if(secs<=0||!document.getElementById('tap-btn')){
+          clearInterval(ti);
+          const btn=document.getElementById('tap-btn');if(btn)btn.disabled=true;
+          ptimer=setTimeout(()=>taps>=target?showWin(b):showLose(),600);
+        }
+      },1000);
+      pints.push(ti);
+    }
+    taps++;
+    const btn=document.getElementById('tap-btn');
+    if(btn){btn.style.transform='scale(.93)';setTimeout(()=>{if(btn)btn.style.transform='scale(1)';},50);}
+    const rem=Math.max(0,target-taps);
+    const cnt=document.getElementById('tap-cnt');
+    if(cnt){cnt.textContent=rem;if(rem===0)cnt.style.color='#22c55e';}
+    const res=document.getElementById('tap-res');if(res)res.textContent=`${taps} tapova`;
+  };
+}
+
+// ── SPIN ──────────────────────────────────────────────
+function pSpin(b){
+  const {p,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  const prizes=b.game.prizes||[];const n=prizes.length;const seg=360/n;
+  gprog('1 free spin');
+  const lighter=hex=>{const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),bh=parseInt(hex.slice(5,7),16);return`#${Math.min(255,r+70).toString(16).padStart(2,'0')}${Math.min(255,g+55).toString(16).padStart(2,'0')}${Math.min(255,bh+40).toString(16).padStart(2,'0')}`;};
+  const conic=prizes.map((_,i)=>`${i%2===0?p:lighter(p)} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
+  document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;align-items:center;justify-content:center;gap:52px;padding:20px 44px;">
+    <div style="position:relative;width:310px;height:310px;flex-shrink:0;">
+      <div style="position:absolute;top:-11px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:22px solid ${p};z-index:10;"></div>
+      <div id="sw" style="width:100%;height:100%;border-radius:50%;background:conic-gradient(${conic});box-shadow:0 0 0 6px ${bg},0 0 0 8px ${p},0 0 56px ${p}55;transition:transform 4s cubic-bezier(.17,.67,.12,.99);position:relative;overflow:hidden;">
+        ${prizes.map((pr,i)=>{const a=i*seg+seg/2;return`<div style="position:absolute;top:50%;left:50%;width:110px;transform:rotate(${a}deg) translate(7px,-72px) rotate(-${a}deg);font-family:'Manrope',sans-serif;font-size:10px;font-weight:800;color:${i%2===0?bg:p};white-space:nowrap;">${esc(pr.l)}</div>`;}).join('')}
+      </div>
+      <button id="sbtn" onclick="window._spin()" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70px;height:70px;border-radius:50%;background:white;color:${p};font-family:'Manrope',sans-serif;font-weight:900;font-size:11px;letter-spacing:1px;border:none;cursor:pointer;z-index:5;box-shadow:0 4px 14px rgba(0,0,0,.4);">SPIN</button>
+    </div>
+    <div style="max-width:250px;">
+      <h3 style="font-family:${ff};font-size:26px;font-weight:800;line-height:1.1;margin-bottom:9px;">Što možeš<br><span style="color:${p}">osvojiti?</span></h3>
+      <p style="font-size:12px;opacity:.65;line-height:1.6;margin-bottom:12px;">Jedan zavrtaj. Jedna nagrada.</p>
+      <ul style="list-style:none;">${prizes.map(pr=>`<li style="display:flex;justify-content:space-between;padding:8px 11px;margin-bottom:4px;border-radius:6px;background:${p}11;border-left:3px solid ${p};font-size:11px;font-weight:600;"><span>${esc(pr.long||pr.l)}</span><span style="opacity:.4;font-size:10px;">${pr.p}</span></li>`).join('')}</ul>
+    </div>
+  </div>`;
+  window._spin=()=>{
+    const btn=document.getElementById('sbtn');btn.disabled=true;btn.textContent='...';
+    const w=Math.floor(Math.random()*prizes.length);
+    document.getElementById('sw').style.transform=`rotate(${5*360+(360-w*seg-seg/2)}deg)`;
+    ptimer=setTimeout(()=>{const pr=document.getElementById('pg-prize');if(pr)pr.textContent=prizes[w].long||prizes[w].l;showWin(b);},4300);
+  };
+}
+
+// ── SCRATCH ───────────────────────────────────────────
+function pScratch(b){
+  const {p,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  const cardText=b.game.cardText||'🎟️ Grebi i osvoji!';
+  const prize=b.game.reward||'Nagrada';
+  gprog('Grebi karticu!');
+  document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+    <p style="font-size:14px;opacity:.7;font-family:${ff};">Grebi karticu da otkriješ nagradu!</p>
+    <div style="position:relative;width:420px;height:210px;border-radius:18px;overflow:hidden;cursor:crosshair;box-shadow:0 12px 40px rgba(0,0,0,.4);">
+      <div style="position:absolute;inset:0;background:${p};display:flex;flex-direction:column;align-items:center;justify-content:center;color:${bg};">
+        <div style="font-size:40px;font-weight:800;font-family:${ff};">🎉 Čestitamo!</div>
+        <div style="font-size:26px;font-weight:700;margin-top:8px;font-family:${ff};">${esc(prize)}</div>
+      </div>
+      <canvas id="scratch-c" width="420" height="210" style="position:absolute;inset:0;"></canvas>
+    </div>
+    <div id="scratch-pct" style="font-size:12px;color:${p};opacity:.8;">Grebi...</div>
+  </div>`;
+  const canvas=document.getElementById('scratch-c');
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#999';ctx.fillRect(0,0,420,210);
+  ctx.fillStyle='#bbb';ctx.font='bold 20px Inter';ctx.textAlign='center';
+  ctx.fillText(cardText,210,100);ctx.fillText('SCRATCH HERE ↓',210,130);
+  ctx.globalCompositeOperation='destination-out';
+  let isS=false;
+  function scratch(x,y){
+    ctx.beginPath();ctx.arc(x,y,32,0,Math.PI*2);ctx.fill();
+    const d=ctx.getImageData(0,0,420,210).data;
+    let tr=0;for(let i=3;i<d.length;i+=4)if(d[i]===0)tr++;
+    const pct=Math.round(tr/(420*210)*100);
+    const el=document.getElementById('scratch-pct');if(el)el.textContent=`${pct}% greban`;
+    if(pct>55){canvas.style.pointerEvents='none';ptimer=setTimeout(()=>showWin(b),700);}
+  }
+  canvas.addEventListener('mousedown',()=>isS=true);
+  canvas.addEventListener('mouseup',()=>isS=false);
+  canvas.addEventListener('mouseleave',()=>isS=false);
+  canvas.addEventListener('mousemove',e=>{if(!isS)return;const r=canvas.getBoundingClientRect();scratch(e.clientX-r.left,e.clientY-r.top);});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();const tc=e.touches[0];scratch(tc.clientX-r.left,tc.clientY-r.top);},{passive:false});
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();const r=canvas.getBoundingClientRect();const tc=e.touches[0];scratch(tc.clientX-r.left,tc.clientY-r.top);},{passive:false});
+}
+
+// ── SLOTS ─────────────────────────────────────────────
+function pSlots(b){
+  const {p,bg,t}=b.c;const ff=`'${b.font}',sans-serif`;
+  const symbols=b.game.symbols||['🍋','🍒','⭐','💎','🔔','🍀'];
+  const winCount=b.game.winCount||3;
+  gprog('Pull!');
+  document.getElementById('game-body').innerHTML=`<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;">
+    <div style="display:flex;gap:14px;background:rgba(0,0,0,.35);padding:20px;border-radius:16px;border:3px solid ${p};">
+      ${[0,1,2].map(i=>`<div style="width:110px;height:110px;background:rgba(255,255,255,.05);border-radius:11px;border:2px solid ${p}44;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;">
+        <div id="reel${i}" style="font-size:52px;line-height:1;transition:all .2s;">?</div>
+      </div>`).join('')}
+    </div>
+    <button id="pull-btn" onclick="window._pull()" style="padding:14px 38px;background:${p};color:${bg};border:none;border-radius:999px;font-size:17px;font-weight:800;cursor:pointer;font-family:${ff};letter-spacing:.5px;">🎰 PULL!</button>
+    <div id="slots-res" style="font-size:14px;opacity:.7;min-height:22px;font-family:${ff};"></div>
+  </div>`;
+  [0,1,2].forEach(i=>document.getElementById(`reel${i}`).textContent=symbols[Math.floor(Math.random()*symbols.length)]);
+  window._pull=()=>{
+    const btn=document.getElementById('pull-btn');btn.disabled=true;btn.textContent='...';
+    const results=[];
+    [0,1,2].forEach((i)=>{
+      const finalSym=symbols[Math.floor(Math.random()*symbols.length)];
+      results.push(finalSym);
+      let spins=8+i*4,cur=0;
+      const el=document.getElementById(`reel${i}`);
+      const ti=setInterval(()=>{
+        cur=(cur+1)%symbols.length;el.textContent=symbols[cur];spins--;
+        if(spins<=0){clearInterval(ti);el.textContent=finalSym;if(i===2){setTimeout(()=>checkSlots(results,winCount,b),400);}}
+      },80+i*30);
+      pints.push(ti);
+    });
+  };
+}
+function checkSlots(results,winCount,b){
+  const counts={};results.forEach(s=>counts[s]=(counts[s]||0)+1);
+  const max=Math.max(...Object.values(counts));
+  const res=document.getElementById('slots-res');
+  if(max>=winCount){if(res)res.textContent='🎉 Pogodio/la si!';ptimer=setTimeout(()=>showWin(b),600);}
+  else{if(res)res.textContent='Pokušaj opet!';ptimer=setTimeout(()=>showLose(),900);}
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function rcode(pfx){const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s=(pfx||'DP').slice(0,3).toUpperCase()+'-';for(let i=0;i<6;i++)s+=ch[Math.floor(Math.random()*ch.length)];return s;}
+function fakeQR(seed){const sz=21;const cells=[];let s=0;for(let i=0;i<seed.length;i++)s+=seed.charCodeAt(i);for(let i=0;i<sz*sz;i++){s=(s*9301+49297)%233280;cells.push(s%2);}function corner(cx,cy){for(let y=0;y<7;y++)for(let x=0;x<7;x++){const b=x===0||x===6||y===0||y===6,c=x>=2&&x<=4&&y>=2&&y<=4;cells[(cy+y)*sz+(cx+x)]=(b||c)?1:0;}}corner(0,0);corner(sz-7,0);corner(0,sz-7);let svg=`<svg viewBox="0 0 ${sz} ${sz}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect width="${sz}" height="${sz}" fill="white"/>`;for(let y=0;y<sz;y++)for(let x=0;x<sz;x++)if(cells[y*sz+x])svg+=`<rect x="${x}" y="${y}" width="1" height="1" fill="black"/>`;return svg+'</svg>';}
+function confetti(primary){const modal=document.getElementById('pg-win');for(let i=0;i<50;i++){const c=document.createElement('div');c.className='cfp';c.style.background=i%2===0?primary:'#fff';c.style.left=Math.random()*100+'%';c.style.top='-10px';c.style.animationDelay=Math.random()*.5+'s';c.style.borderRadius=Math.random()>.5?'50%':'2px';modal.appendChild(c);setTimeout(()=>c.remove(),3000);}}
+let toastT;
+function toast(msg){document.getElementById('tmsg').textContent=msg;const el=document.getElementById('toast');el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('show'),3000);}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+cfInit().then(() => { renderBrands(); renderGameForm(); });
+</script>
+</body>
+</html>

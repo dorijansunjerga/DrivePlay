@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DrivePlay — Kiosk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ===== THEME VARIABLES ===== */
+:root{
+  --acc:#f5a823; --acc2:#ffbb45;
+  --dot-live:#22c55e;
+}
+body.night{
+  --bg:#0c0c0e; --bg2:#14141a; --card-bg:rgba(255,255,255,0.04);
+  --card-border:rgba(245,168,35,0.15); --text:#ffffff; --dim:#9999a8;
+  --topbar:rgba(12,12,14,0.9); --overlay:rgba(12,12,14,0.92);
+}
+body.day{
+  --bg:#f5f5f0; --bg2:#ffffff; --card-bg:rgba(0,0,0,0.03);
+  --card-border:rgba(245,168,35,0.3); --text:#18181b; --dim:#71717a;
+  --topbar:rgba(245,245,240,0.95); --overlay:rgba(245,245,240,0.95);
+}
+
+/* ===== RESET ===== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;transition:background 0.6s,color 0.6s;}
+
+/* ===== SCREEN PICKER ===== */
+#screen-picker{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:24px;}
+#screen-picker h1{font-family:'Fraunces',serif;font-size:clamp(28px,5vw,52px);font-weight:800;text-align:center;}
+#screen-picker h1 span{color:var(--acc);font-style:italic;}
+#screen-picker p{color:var(--dim);font-size:15px;text-align:center;max-width:400px;line-height:1.6;}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;width:100%;max-width:700px;max-height:55vh;overflow-y:auto;padding:4px;}
+.sp-card{background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:14px;padding:18px 20px;cursor:pointer;transition:all 0.2s;text-align:left;}
+.sp-card:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 8px 24px rgba(245,168,35,0.12);}
+.sp-card-name{font-weight:700;font-size:15px;margin-bottom:4px;}
+.sp-card-loc{font-size:12px;color:var(--dim);}
+.sp-card-count{font-size:11px;color:var(--acc);margin-top:6px;font-weight:600;}
+.sp-none{color:var(--dim);font-size:14px;text-align:center;padding:40px;}
+
+/* ===== HOME ===== */
+#home{position:absolute;inset:0;display:flex;flex-direction:column;padding:32px 48px;
+  transition:opacity 0.35s,transform 0.35s;}
+body.night #home{
+  background:radial-gradient(ellipse at top right,rgba(245,168,35,0.1) 0%,transparent 50%),
+             radial-gradient(ellipse at bottom left,rgba(30,30,36,0.8) 0%,transparent 60%),var(--bg);}
+body.day #home{
+  background:radial-gradient(ellipse at top right,rgba(245,168,35,0.07) 0%,transparent 50%),var(--bg);}
+#home.out{opacity:0;transform:scale(0.97);pointer-events:none;}
+
+.home-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
+.home-logo{font-family:'Fraunces',serif;font-weight:800;font-size:24px;}
+.home-logo span{color:var(--acc);}
+.ride-info{display:flex;gap:18px;font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;}
+.ride-info span{display:flex;align-items:center;gap:5px;}
+.dot{width:6px;height:6px;background:var(--dot-live);border-radius:50%;animation:pulse-dot 2s infinite;}
+.home-headline{font-family:'Fraunces',serif;font-size:clamp(28px,4vw,48px);font-weight:700;line-height:1;letter-spacing:-0.02em;margin-bottom:10px;}
+.home-headline span{color:var(--acc);font-style:italic;font-weight:400;}
+.home-sub{font-size:14px;color:var(--dim);margin-bottom:24px;}
+.game-grid{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;min-height:0;overflow-y:auto;}
+@media(max-width:900px){.game-grid{grid-template-columns:repeat(2,1fr);}}
+
+.game-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:20px 16px;cursor:pointer;transition:all 0.25s;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.game-card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,0.18);}
+.gc-strip{position:absolute;top:0;left:0;right:0;height:4px;}
+.gc-logo-img{width:46px;height:46px;border-radius:10px;object-fit:contain;margin-bottom:14px;background:rgba(255,255,255,0.05);}
+.gc-icon{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;margin-bottom:14px;}
+.gc-brand{font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:5px;}
+.gc-title{font-family:'Fraunces',serif;font-size:18px;font-weight:700;margin-bottom:6px;line-height:1.1;}
+.gc-desc{font-size:11px;color:var(--dim);line-height:1.4;margin-bottom:12px;}
+.gc-cta{margin-top:auto;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--acc);font-weight:700;display:flex;align-items:center;gap:5px;}
+.gc-reward{font-size:10px;color:var(--dim);margin-top:3px;}
+.no-brands{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px;padding:40px;}
+.no-brands h2{font-family:'Fraunces',serif;font-size:28px;font-weight:800;}
+.no-brands p{font-size:14px;color:var(--dim);max-width:400px;line-height:1.6;}
+.no-brands a{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:var(--acc);color:#0c0c0e;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none;}
+
+/* ===== GAME WRAPPER ===== */
+#game-wrap{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
+#game-wrap.on{display:flex;}
+.g-topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px;flex-shrink:0;background:var(--topbar);backdrop-filter:blur(12px);}
+.g-brand-area{display:flex;align-items:center;gap:12px;}
+.g-brand-logo{width:34px;height:34px;border-radius:8px;object-fit:contain;}
+.g-brand-name{font-weight:700;font-size:15px;}
+.g-back-btn{background:var(--card-bg);border:1px solid var(--card-border);color:var(--text);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;}
+.g-back-btn:hover{border-color:var(--acc);color:var(--acc);}
+.g-prog{font-size:11px;padding:5px 13px;border-radius:999px;font-weight:600;}
+
+#game-area{flex:1;overflow:hidden;position:relative;display:flex;flex-direction:column;}
+
+/* ===== RESULT OVERLAY ===== */
+.result-overlay{position:absolute;inset:0;backdrop-filter:blur(18px);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:50;text-align:center;padding:40px;animation:fadeIn 0.4s;}
+body.night .result-overlay{background:rgba(12,12,14,0.92);}
+body.day .result-overlay{background:rgba(245,245,240,0.95);}
+.result-overlay.show{display:flex;}
+.result-emoji{font-size:80px;margin-bottom:16px;animation:popIn 0.5s;}
+.result-title{font-family:'Fraunces',serif;font-size:48px;font-weight:800;margin-bottom:12px;}
+.result-sub{font-size:18px;color:var(--dim);margin-bottom:32px;max-width:380px;line-height:1.5;}
+.result-reward{background:rgba(245,168,35,0.12);border:1.5px solid var(--acc);border-radius:12px;padding:14px 28px;font-size:14px;font-weight:700;color:var(--acc);margin-bottom:28px;}
+.result-btns{display:flex;gap:14px;}
+.r-btn-again{background:var(--acc);color:#0c0c0e;border:none;padding:14px 32px;border-radius:10px;font-weight:800;font-size:15px;cursor:pointer;}
+.r-btn-home{background:var(--card-bg);border:1px solid var(--card-border);color:var(--text);padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;}
+
+/* ===== TRIVIA ===== */
+#g-trivia{display:none;flex-direction:column;flex:1;padding:32px 48px;overflow-y:auto;gap:20px;}
+#g-trivia.on{display:flex;}
+.tri-q-num{font-size:12px;font-weight:700;color:var(--acc);letter-spacing:2px;text-transform:uppercase;}
+.tri-q{font-family:'Fraunces',serif;font-size:clamp(22px,3vw,36px);font-weight:700;line-height:1.2;max-width:700px;}
+.tri-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:700px;}
+.tri-opt{background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all 0.2s;font-size:15px;font-weight:500;text-align:left;color:var(--text);}
+.tri-opt:hover{border-color:var(--acc);background:rgba(245,168,35,0.06);}
+.tri-opt.correct{background:rgba(34,197,94,0.15);border-color:#22c55e;color:#22c55e;}
+.tri-opt.wrong{background:rgba(239,68,68,0.12);border-color:#ef4444;color:#ef4444;}
+.tri-opt:disabled{cursor:default;}
+
+/* ===== TRUE/FALSE ===== */
+#g-truefalse{display:none;flex-direction:column;flex:1;padding:32px 48px;align-items:center;justify-content:center;gap:28px;}
+#g-truefalse.on{display:flex;}
+.tf-num{font-size:12px;font-weight:700;color:var(--acc);letter-spacing:2px;text-transform:uppercase;}
+.tf-stmt{font-family:'Fraunces',serif;font-size:clamp(24px,3.5vw,44px);font-weight:700;line-height:1.2;text-align:center;max-width:680px;}
+.tf-btns{display:flex;gap:20px;}
+.tf-btn{padding:18px 48px;border-radius:14px;font-size:20px;font-weight:800;cursor:pointer;border:2.5px solid transparent;transition:all 0.2s;}
+.tf-btn.t{background:rgba(34,197,94,0.12);border-color:#22c55e;color:#22c55e;}
+.tf-btn.f{background:rgba(239,68,68,0.1);border-color:#ef4444;color:#ef4444;}
+.tf-btn:hover{transform:scale(1.04);}
+.tf-btn.correct{background:#22c55e;color:#fff;transform:scale(1.06);}
+.tf-btn.wrong{background:#ef4444;color:#fff;}
+
+/* ===== SCRAMBLE ===== */
+#g-scramble{display:none;flex-direction:column;flex:1;padding:32px 48px;align-items:center;justify-content:center;gap:20px;}
+#g-scramble.on{display:flex;}
+.scr-hint{font-size:13px;color:var(--dim);}
+.scr-shuffled{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;}
+.scr-letter{width:52px;height:52px;border-radius:10px;background:rgba(245,168,35,0.12);border:1.5px solid var(--acc);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;cursor:pointer;transition:all 0.15s;}
+.scr-letter:hover{background:rgba(245,168,35,0.25);}
+.scr-letter.used{opacity:0.25;pointer-events:none;}
+.scr-answer{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;min-height:60px;}
+.scr-slot{width:52px;height:52px;border-radius:10px;background:var(--card-bg);border:1.5px dashed var(--card-border);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;cursor:pointer;transition:all 0.15s;}
+.scr-slot.filled{border-style:solid;border-color:var(--acc);background:rgba(245,168,35,0.1);}
+.scr-check{background:var(--acc);color:#0c0c0e;border:none;padding:13px 36px;border-radius:10px;font-weight:800;font-size:15px;cursor:pointer;margin-top:4px;}
+.scr-result-msg{font-size:15px;font-weight:700;}
+
+/* ===== MEMORY ===== */
+#g-memory{display:none;flex-direction:column;flex:1;padding:28px 40px;gap:16px;}
+#g-memory.on{display:flex;}
+.mem-info{display:flex;gap:20px;font-size:13px;color:var(--dim);}
+.mem-info b{color:var(--text);}
+.mem-grid{flex:1;display:grid;gap:10px;}
+.mem-card{background:var(--card-bg);border:1.5px solid var(--card-border);border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,3vw,36px);font-weight:700;transition:all 0.3s;user-select:none;}
+.mem-card.flip{background:rgba(245,168,35,0.12);border-color:var(--acc);transform:scale(1.04);}
+.mem-card.matched{background:rgba(34,197,94,0.12);border-color:#22c55e;cursor:default;}
+.mem-card.hidden{color:transparent;}
+
+/* ===== REACTION ===== */
+#g-reaction{display:none;flex-direction:column;flex:1;align-items:center;justify-content:center;gap:24px;padding:40px;}
+#g-reaction.on{display:flex;}
+.react-instructions{font-size:16px;color:var(--dim);text-align:center;}
+.react-target{width:140px;height:140px;border-radius:50%;border:4px solid var(--card-border);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;cursor:pointer;transition:all 0.15s;user-select:none;}
+.react-target.ready{background:rgba(245,168,35,0.1);border-color:var(--acc);animation:glow 1.5s infinite;}
+.react-target.go{background:var(--acc);color:#0c0c0e;border-color:var(--acc);transform:scale(1.06);}
+.react-score{font-family:'Fraunces',serif;font-size:48px;font-weight:800;color:var(--acc);}
+.react-label{font-size:13px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;}
+
+/* ===== TAP FRENZY ===== */
+#g-tap{display:none;flex-direction:column;flex:1;align-items:center;justify-content:center;gap:24px;padding:40px;}
+#g-tap.on{display:flex;}
+.tap-timer-bar{width:100%;max-width:460px;height:8px;background:var(--card-bg);border-radius:99px;overflow:hidden;}
+.tap-timer-fill{height:100%;background:var(--acc);transition:width 0.1s linear;border-radius:99px;}
+.tap-count{font-family:'Fraunces',serif;font-size:80px;font-weight:800;color:var(--acc);line-height:1;}
+.tap-label{font-size:14px;color:var(--dim);text-transform:uppercase;letter-spacing:2px;}
+.tap-btn{width:180px;height:180px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0c0c0e;font-size:28px;font-weight:900;border:none;cursor:pointer;transition:transform 0.08s;box-shadow:0 8px 32px rgba(245,168,35,0.35);user-select:none;}
+.tap-btn:active{transform:scale(0.93);}
+.tap-status{font-size:14px;color:var(--dim);}
+
+/* ===== SPIN WHEEL ===== */
+#g-spin{display:none;flex-direction:column;flex:1;align-items:center;justify-content:center;gap:24px;padding:32px;}
+#g-spin.on{display:flex;}
+.spin-wrap{position:relative;width:min(340px,70vmin);height:min(340px,70vmin);}
+#spin-canvas{width:100%;height:100%;border-radius:50%;box-shadow:0 8px 40px rgba(0,0,0,0.3);}
+.spin-needle{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:32px;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.5));pointer-events:none;}
+.spin-btn{background:var(--acc);color:#0c0c0e;border:none;padding:15px 48px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.spin-btn:disabled{opacity:0.5;cursor:default;}
+
+/* ===== SCRATCH CARD ===== */
+#g-scratch{display:none;flex-direction:column;flex:1;align-items:center;justify-content:center;gap:24px;padding:40px;}
+#g-scratch.on{display:flex;}
+.scratch-instruct{font-size:15px;color:var(--dim);text-align:center;}
+.scratch-wrap{position:relative;width:min(340px,80vw);height:min(200px,45vw);}
+#scratch-canvas{position:absolute;inset:0;border-radius:16px;cursor:crosshair;touch-action:none;}
+.scratch-reveal{position:absolute;inset:0;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:clamp(22px,4vw,36px);font-weight:800;text-align:center;padding:20px;line-height:1.3;}
+
+/* ===== SLOTS ===== */
+#g-slots{display:none;flex-direction:column;flex:1;align-items:center;justify-content:center;gap:28px;padding:40px;}
+#g-slots.on{display:flex;}
+.slots-reels{display:flex;gap:16px;align-items:center;}
+.slots-reel{width:90px;height:110px;background:var(--card-bg);border:2px solid var(--card-border);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:52px;overflow:hidden;position:relative;transition:border-color 0.3s;}
+.slots-reel.winning{border-color:var(--acc);background:rgba(245,168,35,0.1);}
+.slots-reel.spinning{animation:slotSpin 0.12s linear infinite;}
+.slots-btn{background:var(--acc);color:#0c0c0e;border:none;padding:15px 52px;border-radius:12px;font-weight:800;font-size:17px;cursor:pointer;transition:all 0.2s;}
+.slots-btn:disabled{opacity:0.5;cursor:default;}
+.slots-label{font-size:13px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+
+/* ===== ANIMATIONS ===== */
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{0%{transform:scale(0.5)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(245,168,35,0)}50%{box-shadow:0 0 24px rgba(245,168,35,0.5)}}
+@keyframes slotSpin{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+@keyframes countdown{from{stroke-dashoffset:0}to{stroke-dashoffset:283}}
+</style>
+</head>
+<body class="night">
+
+<!-- SCREEN PICKER -->
+<div id="screen-picker" style="display:none">
+  <h1>Drive<span>Play</span></h1>
+  <p>Odaberite ekran da biste pokrenuli kiosk za ovaj uređaj.</p>
+  <div class="sp-grid" id="sp-list"></div>
+</div>
+
+<!-- HOME -->
+<div id="home">
+  <div class="home-top">
+    <div class="home-logo">Drive<span>Play</span></div>
+    <div class="ride-info">
+      <span><span class="dot"></span> Vožnja u tijeku</span>
+      <span id="home-clock">--:--</span>
+    </div>
+  </div>
+  <div class="home-headline">Igraj i <span>osvoji</span><br>na putu.</div>
+  <div class="home-sub">Odaberi igru i postani naš junak dana.</div>
+  <div class="game-grid" id="game-grid"></div>
+</div>
+
+<!-- GAME WRAPPER -->
+<div id="game-wrap">
+  <div class="g-topbar">
+    <div class="g-brand-area" id="g-brand-area"></div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="g-prog" id="g-prog"></span>
+      <button class="g-back-btn" id="g-back-btn" onclick="goHome()">← Natrag</button>
+    </div>
+  </div>
+  <div id="game-area">
+
+    <!-- TRIVIA -->
+    <div id="g-trivia">
+      <div class="tri-q-num" id="tri-q-num"></div>
+      <div class="tri-q" id="tri-q"></div>
+      <div class="tri-opts" id="tri-opts"></div>
+    </div>
+
+    <!-- TRUE/FALSE -->
+    <div id="g-truefalse">
+      <div class="tf-num" id="tf-num"></div>
+      <div class="tf-stmt" id="tf-stmt"></div>
+      <div class="tf-btns">
+        <button class="tf-btn t" id="tf-true" onclick="tfAnswer(true)">✓ Točno</button>
+        <button class="tf-btn f" id="tf-false" onclick="tfAnswer(false)">✗ Netočno</button>
+      </div>
+    </div>
+
+    <!-- SCRAMBLE -->
+    <div id="g-scramble">
+      <div class="tri-q-num" id="scr-num"></div>
+      <div class="scr-hint" id="scr-hint"></div>
+      <div class="scr-shuffled" id="scr-shuffled"></div>
+      <div class="scr-answer" id="scr-answer"></div>
+      <button class="scr-check" onclick="scrCheck()">Provjeri ✓</button>
+      <div class="scr-result-msg" id="scr-msg"></div>
+    </div>
+
+    <!-- MEMORY -->
+    <div id="g-memory">
+      <div class="mem-info">
+        <div>Potezi: <b id="mem-moves">0</b></div>
+        <div>Pronađeno: <b id="mem-found">0</b>/<b id="mem-total">0</b></div>
+      </div>
+      <div class="mem-grid" id="mem-grid"></div>
+    </div>
+
+    <!-- REACTION -->
+    <div id="g-reaction">
+      <div class="react-instructions" id="react-inst">Pritisni kad postane zlatno!</div>
+      <div class="react-target" id="react-target" onclick="reactHit()">Čekaj...</div>
+      <div>
+        <div class="react-score" id="react-score">—</div>
+        <div class="react-label" id="react-label">ms</div>
+      </div>
+    </div>
+
+    <!-- TAP FRENZY -->
+    <div id="g-tap">
+      <div class="tap-timer-bar"><div class="tap-timer-fill" id="tap-fill" style="width:100%"></div></div>
+      <div class="tap-count" id="tap-count">0</div>
+      <div class="tap-label">tapova</div>
+      <button class="tap-btn" id="tap-btn" onclick="tapHit()">TAP!</button>
+      <div class="tap-status" id="tap-status">Tapkaj što brže možeš!</div>
+    </div>
+
+    <!-- SPIN -->
+    <div id="g-spin">
+      <div class="spin-wrap">
+        <div class="spin-needle">▼</div>
+        <canvas id="spin-canvas"></canvas>
+      </div>
+      <button class="spin-btn" id="spin-btn" onclick="spinWheel()">Zavrti! 🎰</button>
+    </div>
+
+    <!-- SCRATCH -->
+    <div id="g-scratch">
+      <div class="scratch-instruct">Ogrebi kartu da otkriješ nagradu!</div>
+      <div class="scratch-wrap">
+        <div class="scratch-reveal" id="scratch-reveal"></div>
+        <canvas id="scratch-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- SLOTS -->
+    <div id="g-slots">
+      <div class="slots-label">Voćke sreće</div>
+      <div class="slots-reels" id="slots-reels"></div>
+      <button class="slots-btn" id="slots-btn" onclick="slotsPlay()">Vrti! 🎰</button>
+      <div class="tap-status" id="slots-status"></div>
+    </div>
+
+    <!-- RESULT OVERLAY -->
+    <div class="result-overlay" id="result-overlay">
+      <div class="result-emoji" id="res-emoji"></div>
+      <div class="result-title" id="res-title"></div>
+      <div class="result-sub" id="res-sub"></div>
+      <div class="result-reward" id="res-reward" style="display:none"></div>
+      <div class="result-btns">
+        <button class="r-btn-again" onclick="playAgain()">Igraj ponovno</button>
+        <button class="r-btn-home" onclick="goHome()">Sve igre</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== STORAGE KEYS =====
+const BRANDS_KEY = 'dp_brands_v2';
+const SCREENS_KEY = 'dp_screens_v1';
+
+// ===== CLOUDFLARE SYNC =====
+// Same CF_WORKER value as in dashboard.html — no key needed (reads are public)
+const CF_WORKER = '';   // e.g. 'https://driveplay-api.yourname.workers.dev'
+const CF_POLL_MS = 15000;
+
+async function cfPull() {
+  if (!CF_WORKER) return false;
+  try {
+    const [br, sc] = await Promise.all([
+      fetch(CF_WORKER + '/brands', { cache: 'no-store' }).then(r => r.text()),
+      fetch(CF_WORKER + '/screens', { cache: 'no-store' }).then(r => r.text()),
+    ]);
+    const brandsChanged = br !== localStorage.getItem(BRANDS_KEY);
+    const screensChanged = sc !== localStorage.getItem(SCREENS_KEY);
+    if (brandsChanged) localStorage.setItem(BRANDS_KEY, br);
+    if (screensChanged) localStorage.setItem(SCREENS_KEY, sc);
+    return brandsChanged || screensChanged;
+  } catch(e) {
+    return false;
+  }
+}
+
+function startPolling() {
+  if (!CF_WORKER) return;
+  setInterval(async () => {
+    const changed = await cfPull();
+    if (changed) {
+      if (currentScreenId) loadForScreen(currentScreenId);
+      else { currentBrands = getBrands(); renderHome(); }
+    }
+  }, CF_POLL_MS);
+}
+
+// ===== THEME =====
+function applyTheme(){
+  const h = new Date().getHours();
+  document.body.classList.toggle('day', h>=7 && h<20);
+  document.body.classList.toggle('night', !(h>=7 && h<20));
+}
+applyTheme();
+setInterval(applyTheme, 60000);
+
+// ===== CLOCK =====
+function updateClock(){
+  const n = new Date();
+  const el = document.getElementById('home-clock');
+  if(el) el.textContent = n.getHours().toString().padStart(2,'0')+':'+n.getMinutes().toString().padStart(2,'0');
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+// ===== DATA HELPERS =====
+function getBrands(){ try{return JSON.parse(localStorage.getItem(BRANDS_KEY)||'[]');}catch{return [];} }
+function getScreens(){ try{return JSON.parse(localStorage.getItem(SCREENS_KEY)||'[]');}catch{return [];} }
+function saveScreens(arr){ localStorage.setItem(SCREENS_KEY, JSON.stringify(arr)); }
+function trackPlay(won){
+  const sid = currentScreenId;
+  if(!sid) return;
+  const screens = getScreens();
+  const s = screens.find(x=>x.id===sid);
+  if(!s) return;
+  if(!s.stats) s.stats={plays:0,wins:0,lastSeen:null};
+  s.stats.plays = (s.stats.plays||0)+1;
+  if(won) s.stats.wins = (s.stats.wins||0)+1;
+  s.stats.lastSeen = new Date().toISOString();
+  saveScreens(screens);
+}
+
+// ===== SCREEN RESOLUTION =====
+let currentScreenId = null;
+let currentBrands = [];
+let currentBrand = null;
+
+function resolveScreen(){
+  const params = new URLSearchParams(location.search);
+  const paramId = params.get('screen');
+  if(paramId){
+    currentScreenId = paramId;
+    localStorage.setItem('dp_current_screen', paramId);
+    return loadForScreen(paramId);
+  }
+  const stored = localStorage.getItem('dp_current_screen');
+  if(stored){
+    currentScreenId = stored;
+    return loadForScreen(stored);
+  }
+  showScreenPicker();
+}
+
+function loadForScreen(sid){
+  const screens = getScreens();
+  const screen = screens.find(s=>s.id===sid);
+  const brands = getBrands();
+  if(screen && screen.brandIds && screen.brandIds.length){
+    currentBrands = brands.filter(b=>screen.brandIds.includes(b.id));
+  } else {
+    currentBrands = brands;
+  }
+  if(currentBrands.length===1){
+    launchGame(currentBrands[0]);
+  } else {
+    renderHome();
+  }
+}
+
+function showScreenPicker(){
+  const screens = getScreens();
+  const picker = document.getElementById('screen-picker');
+  const list = document.getElementById('sp-list');
+  picker.style.display='flex';
+  document.getElementById('home').style.display='none';
+  if(!screens.length){
+    const brands = getBrands();
+    currentBrands = brands;
+    picker.style.display='none';
+    document.getElementById('home').style.display='flex';
+    renderHome();
+    return;
+  }
+  list.innerHTML = screens.map(s=>{
+    const brands = getBrands();
+    const assigned = (s.brandIds||[]).map(id=>brands.find(b=>b.id===id)).filter(Boolean);
+    return `<div class="sp-card" onclick="selectScreen('${s.id}')">
+      <div class="sp-card-name">${s.name||'Ekran'}</div>
+      <div class="sp-card-loc">${s.loc||''}</div>
+      <div class="sp-card-count">${assigned.length} igr${assigned.length===1?'a':'ice/a'} dodijeljeno</div>
+    </div>`;
+  }).join('');
+}
+
+function selectScreen(sid){
+  currentScreenId = sid;
+  localStorage.setItem('dp_current_screen', sid);
+  document.getElementById('screen-picker').style.display='none';
+  document.getElementById('home').style.display='flex';
+  loadForScreen(sid);
+}
+
+// ===== HOME =====
+function renderHome(){
+  const grid = document.getElementById('game-grid');
+  if(!currentBrands.length){
+    const allBrands = getBrands();
+    currentBrands = allBrands;
+  }
+  if(!currentBrands.length){
+    grid.innerHTML=`<div class="no-brands">
+      <h2>Nema igara</h2>
+      <p>Dodaj brendove u admin panelu pa se vrati ovdje.</p>
+      <a href="dashboard.html">Otvori dashboard ↗</a>
+    </div>`;
+    return;
+  }
+  const TYPE_LABELS = {
+    trivia:'Kviz', truefalse:'Točno/Netočno', scramble:'Složi Riječ',
+    memory:'Memory', reaction:'Reakcija', tap:'Tap Frenzy',
+    spin:'Vrtnja', scratch:'Grebalica', slots:'Voćkice'
+  };
+  const TYPE_ICONS = {
+    trivia:'🧠', truefalse:'✅', scramble:'🔤',
+    memory:'🧩', reaction:'⚡', tap:'👆',
+    spin:'🎰', scratch:'🎟️', slots:'🎲'
+  };
+  grid.innerHTML = currentBrands.map(b=>{
+    const type = b.game?.type||'trivia';
+    const primary = b.c?.p||'#f5a823';
+    const logoHtml = b.logoImg
+      ? `<img src="${b.logoImg}" class="gc-logo-img" alt="${b.name}">`
+      : `<div class="gc-icon" style="background:${primary}22;color:${primary}">${b.name[0]}</div>`;
+    return `<div class="game-card" onclick="launchGame(getBrandById('${b.id}'))" style="border-color:${primary}30">
+      <div class="gc-strip" style="background:${primary}"></div>
+      ${logoHtml}
+      <div class="gc-brand" style="color:${primary}">${b.name}</div>
+      <div class="gc-title">${b.tagline||TYPE_LABELS[type]}</div>
+      <div class="gc-desc">${TYPE_LABELS[type]}</div>
+      <div class="gc-cta">${TYPE_ICONS[type]} Igraj sada →</div>
+      ${b.game?.reward?`<div class="gc-reward">🏆 ${b.game.reward}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function getBrandById(id){ return getBrands().find(b=>b.id===id)||null; }
+
+// ===== LAUNCH GAME =====
+function launchGame(brand){
+  if(!brand) return;
+  currentBrand = brand;
+  document.getElementById('home').classList.add('out');
+  setTimeout(()=>{
+    document.getElementById('home').style.display='none';
+    document.getElementById('game-wrap').classList.add('on');
+    renderTopbar(brand);
+    startGame(brand);
+  },300);
+}
+
+function renderTopbar(brand){
+  const area = document.getElementById('g-brand-area');
+  const primary = brand.c?.p||'#f5a823';
+  const logoHtml = brand.logoImg
+    ? `<img src="${brand.logoImg}" class="g-brand-logo" alt="${brand.name}">`
+    : `<div style="width:34px;height:34px;border-radius:8px;background:${primary}22;color:${primary};display:flex;align-items:center;justify-content:center;font-weight:800">${brand.name[0]}</div>`;
+  area.innerHTML = logoHtml + `<span class="g-brand-name">${brand.name}</span>`;
+  // hide back button if single-brand kiosk
+  const backBtn = document.getElementById('g-back-btn');
+  if(currentBrands.length<=1) backBtn.style.display='none';
+  else backBtn.style.display='';
+}
+
+function goHome(){
+  hideAllGames();
+  hideResult();
+  document.getElementById('game-wrap').classList.remove('on');
+  const home = document.getElementById('home');
+  home.style.display='flex';
+  home.classList.remove('out');
+}
+
+// ===== GAME DISPATCHER =====
+function hideAllGames(){
+  ['g-trivia','g-truefalse','g-scramble','g-memory','g-reaction','g-tap','g-spin','g-scratch','g-slots']
+    .forEach(id=>{ const el=document.getElementById(id); el.classList.remove('on'); el.style.display='none'; });
+}
+function showGame(id){
+  hideAllGames();
+  const el = document.getElementById(id);
+  el.style.display='flex';
+  el.classList.add('on');
+}
+function setProgress(txt){ document.getElementById('g-prog').textContent=txt; }
+
+function startGame(brand){
+  hideResult();
+  const type = brand.game?.type||'trivia';
+  const primary = brand.c?.p||'#f5a823';
+  document.documentElement.style.setProperty('--brand-p', primary);
+  switch(type){
+    case 'trivia':    initTrivia(brand);    break;
+    case 'truefalse': initTrueFalse(brand); break;
+    case 'scramble':  initScramble(brand);  break;
+    case 'memory':    initMemory(brand);    break;
+    case 'reaction':  initReaction(brand);  break;
+    case 'tap':       initTap(brand);       break;
+    case 'spin':      initSpin(brand);      break;
+    case 'scratch':   initScratch(brand);   break;
+    case 'slots':     initSlots(brand);     break;
+  }
+}
+
+function playAgain(){
+  if(!currentBrand) return;
+  hideResult();
+  startGame(currentBrand);
+}
+
+// ===== RESULT =====
+function showResult(won, title, sub){
+  const overlay = document.getElementById('result-overlay');
+  document.getElementById('res-emoji').textContent = won?'🎉':'😔';
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-sub').textContent = sub;
+  const rewardEl = document.getElementById('res-reward');
+  if(won && currentBrand?.game?.reward){
+    rewardEl.textContent='🏆 '+currentBrand.game.reward;
+    rewardEl.style.display='block';
+  } else {
+    rewardEl.style.display='none';
+  }
+  overlay.classList.add('show');
+  trackPlay(won);
+}
+function hideResult(){ document.getElementById('result-overlay').classList.remove('show'); }
+
+// ===== TRIVIA =====
+let triQs=[], triIdx=0, triScore=0;
+function initTrivia(brand){
+  triQs = (brand.game?.questions||[]).slice();
+  if(!triQs.length){ triQs=[{q:'Tko je osnivač DrivePlay-a?',opts:['Ja','Ti','Mi','Oni'],correct:0}]; }
+  triIdx=0; triScore=0;
+  showGame('g-trivia');
+  renderTri();
+}
+function renderTri(){
+  if(triIdx>=triQs.length){ showResult(triScore>=Math.ceil(triQs.length*0.6),'Bravo!',`Točnih: ${triScore}/${triQs.length}`); return; }
+  const q=triQs[triIdx];
+  document.getElementById('tri-q-num').textContent=`Pitanje ${triIdx+1} / ${triQs.length}`;
+  document.getElementById('tri-q').textContent=q.q;
+  setProgress(`${triScore} ✓`);
+  const opts=document.getElementById('tri-opts');
+  opts.innerHTML=q.opts.map((o,i)=>`<button class="tri-opt" onclick="triPick(${i})">${o}</button>`).join('');
+}
+function triPick(i){
+  const q=triQs[triIdx];
+  const btns=document.querySelectorAll('.tri-opt');
+  btns.forEach(b=>b.disabled=true);
+  btns[i].classList.add(i===q.correct?'correct':'wrong');
+  if(i===q.correct){ btns[q.correct].classList.add('correct'); triScore++; }
+  else { btns[q.correct].classList.add('correct'); }
+  triIdx++;
+  setTimeout(renderTri,1200);
+}
+
+// ===== TRUE/FALSE =====
+let tfItems=[],tfIdx=0,tfScore=0;
+function initTrueFalse(brand){
+  tfItems=(brand.game?.items||[]).slice();
+  if(!tfItems.length){ tfItems=[{s:'DrivePlay je platforma za oglašavanje',a:true},{s:'Taksiji lete',a:false}]; }
+  tfIdx=0; tfScore=0;
+  showGame('g-truefalse');
+  renderTF();
+}
+function renderTF(){
+  if(tfIdx>=tfItems.length){ showResult(tfScore>=Math.ceil(tfItems.length*0.6),'Odlično!',`Točnih: ${tfScore}/${tfItems.length}`); return; }
+  const it=tfItems[tfIdx];
+  document.getElementById('tf-num').textContent=`Tvrdnja ${tfIdx+1} / ${tfItems.length}`;
+  document.getElementById('tf-stmt').textContent=it.s;
+  document.getElementById('tf-true').className='tf-btn t';
+  document.getElementById('tf-false').className='tf-btn f';
+  document.getElementById('tf-true').disabled=false;
+  document.getElementById('tf-false').disabled=false;
+  setProgress(`${tfScore} ✓`);
+}
+function tfAnswer(ans){
+  const it=tfItems[tfIdx];
+  const correct=ans===it.a;
+  const btnT=document.getElementById('tf-true');
+  const btnF=document.getElementById('tf-false');
+  btnT.disabled=true; btnF.disabled=true;
+  if(correct){ (ans?btnT:btnF).classList.add('correct'); tfScore++; }
+  else { (ans?btnT:btnF).classList.add('wrong'); (it.a?btnT:btnF).classList.add('correct'); }
+  tfIdx++;
+  setTimeout(renderTF,1100);
+}
+
+// ===== SCRAMBLE =====
+let scrWords=[],scrIdx=0,scrScore=0,scrPicked=[];
+function initScramble(brand){
+  scrWords=(brand.game?.words||[]).slice();
+  if(!scrWords.length){ scrWords=[{word:'ZAGREB',hint:'Grad'},{word:'TAXI',hint:'Vozilo'}]; }
+  scrIdx=0; scrScore=0;
+  showGame('g-scramble');
+  renderScr();
+}
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+function renderScr(){
+  if(scrIdx>=scrWords.length){
+    const won=scrScore>=Math.ceil(scrWords.length*0.6);
+    showResult(won,'Bravo!',`Složio/la si ${scrScore}/${scrWords.length} riječi`);
+    return;
+  }
+  const w=scrWords[scrIdx];
+  scrPicked=new Array(w.word.length).fill(null);
+  const shuffled=shuffle(w.word.split('').map((l,i)=>({l,origIdx:i})));
+  document.getElementById('scr-num').textContent=`Riječ ${scrIdx+1} / ${scrWords.length}`;
+  document.getElementById('scr-hint').textContent=w.hint?`Hint: ${w.hint}`:'';
+  document.getElementById('scr-msg').textContent='';
+  setProgress(`${scrScore} ✓`);
+  const sf=document.getElementById('scr-shuffled');
+  sf.innerHTML=shuffled.map((obj,i)=>
+    `<div class="scr-letter" id="sl-${i}" onclick="scrPickLetter(${i},'${obj.l}')">${obj.l}</div>`
+  ).join('');
+  window._scrShuffled=shuffled;
+  renderScrAnswer();
+}
+function renderScrAnswer(){
+  const w=scrWords[scrIdx];
+  const sa=document.getElementById('scr-answer');
+  sa.innerHTML=scrPicked.map((l,i)=>
+    `<div class="scr-slot ${l?'filled':''}" id="sa-${i}" onclick="scrRemove(${i})">${l||''}</div>`
+  ).join('');
+}
+function scrPickLetter(i,l){
+  const slot=scrPicked.findIndex(x=>x===null);
+  if(slot<0) return;
+  scrPicked[slot]=l;
+  document.getElementById(`sl-${i}`).classList.add('used');
+  window._scrShuffled[i].used=true;
+  renderScrAnswer();
+}
+function scrRemove(i){
+  const l=scrPicked[i];
+  if(!l) return;
+  scrPicked[i]=null;
+  const sh=window._scrShuffled||[];
+  const orig=sh.find(x=>x.l===l&&x.used);
+  if(orig){ orig.used=false; const idx=sh.indexOf(orig); document.getElementById(`sl-${idx}`).classList.remove('used'); }
+  renderScrAnswer();
+}
+function scrCheck(){
+  const w=scrWords[scrIdx].word;
+  const attempt=scrPicked.join('');
+  const msg=document.getElementById('scr-msg');
+  if(attempt===w){ msg.style.color='#22c55e'; msg.textContent='✓ Točno!'; scrScore++; scrIdx++; setTimeout(renderScr,900); }
+  else { msg.style.color='#ef4444'; msg.textContent='✗ Pokušaj ponovo!'; }
+}
+
+// ===== MEMORY =====
+let memCards=[],memFlipped=[],memMatched=0,memMoves=0,memLocked=false;
+function initMemory(brand){
+  const items=(brand.game?.items||['🍕','🚀','🎸','⚽','🌈','🦁']).slice(0,8);
+  const pairs=[...items,...items];
+  memCards=shuffle(pairs).map((v,i)=>({id:i,val:v,flipped:false,matched:false}));
+  memFlipped=[]; memMatched=0; memMoves=0; memLocked=false;
+  showGame('g-memory');
+  const total=pairs.length/2;
+  document.getElementById('mem-total').textContent=total;
+  document.getElementById('mem-found').textContent=0;
+  document.getElementById('mem-moves').textContent=0;
+  const grid=document.getElementById('mem-grid');
+  const cols=items.length<=4?4:Math.min(6,Math.ceil(Math.sqrt(pairs.length)));
+  grid.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  renderMem();
+}
+function renderMem(){
+  const grid=document.getElementById('mem-grid');
+  grid.innerHTML=memCards.map(c=>`
+    <div class="mem-card ${c.flipped||c.matched?'flip':''} ${c.matched?'matched':''} ${!c.flipped&&!c.matched?'hidden':''}"
+         onclick="memFlip(${c.id})" id="mc-${c.id}">${c.flipped||c.matched?c.val:''}</div>
+  `).join('');
+}
+function memFlip(id){
+  if(memLocked) return;
+  const c=memCards.find(x=>x.id===id);
+  if(!c||c.flipped||c.matched) return;
+  c.flipped=true;
+  memFlipped.push(c);
+  renderMem();
+  if(memFlipped.length===2){
+    memMoves++;
+    document.getElementById('mem-moves').textContent=memMoves;
+    memLocked=true;
+    setTimeout(()=>{
+      const [a,b]=memFlipped;
+      if(a.val===b.val){ a.matched=true; b.matched=true; memMatched++;
+        document.getElementById('mem-found').textContent=memMatched;
+        if(memMatched===memCards.length/2){ setTimeout(()=>showResult(true,'Sjajno!',`Sve pronađeno u ${memMoves} poteza!`),400); }
+      } else { a.flipped=false; b.flipped=false; }
+      memFlipped=[]; memLocked=false;
+      renderMem();
+    },900);
+  }
+}
+
+// ===== REACTION =====
+let reactTimer=null,reactStart=null,reactPhase='idle',reactRounds=0,reactBest=null;
+function initReaction(brand){
+  reactPhase='idle'; reactRounds=0; reactBest=null;
+  showGame('g-reaction');
+  setProgress('3 runde');
+  document.getElementById('react-inst').textContent='Pritisni kad postane zlatno!';
+  document.getElementById('react-score').textContent='—';
+  document.getElementById('react-label').textContent='ms';
+  const tgt=document.getElementById('react-target');
+  tgt.className='react-target';
+  tgt.textContent='Kreni!';
+  reactPhase='pre';
+  reactSchedule();
+}
+function reactSchedule(){
+  const delay=1200+Math.random()*2800;
+  clearTimeout(reactTimer);
+  reactTimer=setTimeout(()=>{
+    if(reactPhase!=='pre') return;
+    reactStart=Date.now();
+    reactPhase='go';
+    const tgt=document.getElementById('react-target');
+    tgt.className='react-target go';
+    tgt.textContent='SADA!';
+  },delay);
+}
+function reactHit(){
+  if(reactPhase==='idle') return;
+  if(reactPhase==='pre'){
+    document.getElementById('react-target').textContent='Prerano!';
+    clearTimeout(reactTimer);
+    setTimeout(()=>{ reactPhase='pre'; document.getElementById('react-target').textContent='Čekaj...'; reactSchedule(); },800);
+    return;
+  }
+  if(reactPhase==='go'){
+    const ms=Date.now()-reactStart;
+    if(!reactBest||ms<reactBest) reactBest=ms;
+    document.getElementById('react-score').textContent=ms;
+    reactRounds++;
+    reactPhase='pre';
+    const tgt=document.getElementById('react-target');
+    tgt.className='react-target';
+    tgt.textContent='Opet...';
+    setProgress(`${reactRounds}/3`);
+    if(reactRounds>=3){
+      setTimeout(()=>showResult(reactBest<500,'Brzi si!',`Najbolji: ${reactBest}ms`),600);
+    } else {
+      setTimeout(reactSchedule,700);
+    }
+  }
+}
+
+// ===== TAP FRENZY =====
+let tapCount=0,tapActive=false,tapTimer=null,tapInterval=null;
+function initTap(brand){
+  tapCount=0; tapActive=false;
+  clearInterval(tapInterval); clearTimeout(tapTimer);
+  const target=brand.game?.target||30;
+  const secs=brand.game?.secs||5;
+  showGame('g-tap');
+  document.getElementById('tap-count').textContent='0';
+  document.getElementById('tap-fill').style.width='100%';
+  document.getElementById('tap-status').textContent=`Cilj: ${target} tapova za ${secs}s`;
+  setProgress(`Cilj: ${target}`);
+}
+function tapHit(){
+  if(!tapActive){
+    const brand=currentBrand;
+    const secs=brand.game?.secs||5;
+    const target=brand.game?.target||30;
+    tapActive=true; tapCount=0;
+    const start=Date.now();
+    tapInterval=setInterval(()=>{
+      const elapsed=(Date.now()-start)/1000;
+      const pct=Math.max(0,1-(elapsed/secs));
+      document.getElementById('tap-fill').style.width=(pct*100)+'%';
+    },60);
+    tapTimer=setTimeout(()=>{
+      clearInterval(tapInterval); tapActive=false;
+      document.getElementById('tap-btn').disabled=true;
+      const won=tapCount>=target;
+      setTimeout(()=>{ document.getElementById('tap-btn').disabled=false; showResult(won,won?'Bravo!':'Skoro!',`Postignuto ${tapCount} tapova. Cilj: ${target}.`); },400);
+    },secs*1000);
+  }
+  tapCount++;
+  document.getElementById('tap-count').textContent=tapCount;
+}
+
+// ===== SPIN WHEEL =====
+let spinRunning=false;
+function initSpin(brand){
+  showGame('g-spin');
+  document.getElementById('spin-btn').disabled=false;
+  spinRunning=false;
+  drawWheel(brand);
+  setProgress('Spin!');
+}
+function drawWheel(brand){
+  const prizes=brand.game?.prizes||[{l:'10%',long:'10% popust',p:'common'},{l:'20%',long:'20% popust',p:'rare'},{l:'Nema',long:'Pokušaj opet',p:'common'},{l:'Poklon',long:'Besplatni poklon!',p:'epic'}];
+  const canvas=document.getElementById('spin-canvas');
+  const sz=canvas.offsetWidth||340;
+  canvas.width=sz; canvas.height=sz;
+  const ctx=canvas.getContext('2d');
+  const cx=sz/2,cy=sz/2,r=sz/2-4;
+  const n=prizes.length;
+  const arc=(2*Math.PI)/n;
+  const COLORS=['#f5a823','#ffbb45','#c97c10','#e8941a','#ffd166','#d4870f'];
+  prizes.forEach((p,i)=>{
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,i*arc,(i+1)*arc);
+    ctx.fillStyle=COLORS[i%COLORS.length]; ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,0.2)'; ctx.lineWidth=2; ctx.stroke();
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(i*arc+arc/2);
+    ctx.textAlign='right'; ctx.fillStyle='#0c0c0e';
+    ctx.font=`bold ${Math.max(11,sz/28)}px Inter`;
+    ctx.fillText(p.l,r-12,5); ctx.restore();
+  });
+  canvas.dataset.prizes=JSON.stringify(prizes);
+  canvas.dataset.arc=arc;
+  canvas.style.transform='rotate(0deg)';
+  canvas._rotation=0;
+}
+function spinWheel(){
+  if(spinRunning) return;
+  const canvas=document.getElementById('spin-canvas');
+  const prizes=JSON.parse(canvas.dataset.prizes);
+  const arc=parseFloat(canvas.dataset.arc);
+  spinRunning=true;
+  document.getElementById('spin-btn').disabled=true;
+  const extraSpins=5+Math.random()*5;
+  const landIdx=Math.floor(Math.random()*prizes.length);
+  const landAngle=2*Math.PI*extraSpins + (2*Math.PI - landIdx*arc - arc/2);
+  let start=null; const duration=4000;
+  const initRot=canvas._rotation||0;
+  function step(ts){
+    if(!start) start=ts;
+    const prog=Math.min((ts-start)/duration,1);
+    const ease=1-Math.pow(1-prog,4);
+    const angle=initRot+landAngle*ease;
+    canvas.style.transform=`rotate(${angle}rad)`;
+    canvas._rotation=angle;
+    if(prog<1){ requestAnimationFrame(step); }
+    else {
+      spinRunning=false;
+      const prize=prizes[landIdx];
+      const won=prize.p==='rare'||prize.p==='epic';
+      setTimeout(()=>showResult(won, won?'Čestitamo! 🎉':'Gotovo!', prize.long||prize.l),300);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+// ===== SCRATCH CARD =====
+let scratchDone=false;
+function initScratch(brand){
+  scratchDone=false;
+  showGame('g-scratch');
+  const text=brand.game?.cardText||brand.game?.reward||'10% POPUST!';
+  const primary=brand.c?.p||'#f5a823';
+  const reveal=document.getElementById('scratch-reveal');
+  reveal.textContent=text;
+  reveal.style.background=`linear-gradient(135deg,${primary}22,${primary}44)`;
+  reveal.style.color=primary;
+  const canvas=document.getElementById('scratch-canvas');
+  const wrap=canvas.parentElement;
+  canvas.width=wrap.offsetWidth||340;
+  canvas.height=wrap.offsetHeight||200;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#888';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#666';
+  ctx.font='bold 18px Inter';
+  ctx.textAlign='center';
+  ctx.fillText('Ogrebi za nagradu ✦',canvas.width/2,canvas.height/2-8);
+  ctx.fillText('Scratch for reward!',canvas.width/2,canvas.height/2+18);
+  canvas.style.borderRadius='16px';
+  let drawing=false;
+  function getPos(e){ const r=canvas.getBoundingClientRect(); const src=e.touches?e.touches[0]:e; return {x:src.clientX-r.left,y:src.clientY-r.top}; }
+  function scratchAt(pos){
+    ctx.globalCompositeOperation='destination-out';
+    ctx.beginPath(); ctx.arc(pos.x,pos.y,28,0,2*Math.PI); ctx.fill();
+    if(!scratchDone){ checkScratch(ctx,canvas); }
+  }
+  canvas.onmousedown=e=>{ drawing=true; scratchAt(getPos(e)); };
+  canvas.onmousemove=e=>{ if(drawing) scratchAt(getPos(e)); };
+  canvas.onmouseup=()=>drawing=false;
+  canvas.ontouchstart=e=>{ e.preventDefault(); drawing=true; scratchAt(getPos(e)); };
+  canvas.ontouchmove=e=>{ e.preventDefault(); if(drawing) scratchAt(getPos(e)); };
+  canvas.ontouchend=()=>drawing=false;
+  setProgress('Scratch!');
+}
+function checkScratch(ctx,canvas){
+  const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+  let transparent=0;
+  for(let i=3;i<data.length;i+=4){ if(data[i]===0) transparent++; }
+  const pct=transparent/(data.length/4);
+  if(pct>0.5){
+    scratchDone=true;
+    setTimeout(()=>showResult(true,'Čestitamo!','Otkrili ste nagradu!'),500);
+  }
+}
+
+// ===== SLOTS =====
+let slotsSpinning=false;
+function initSlots(brand){
+  showGame('g-slots');
+  slotsSpinning=false;
+  document.getElementById('slots-btn').disabled=false;
+  document.getElementById('slots-status').textContent='';
+  const symbols=brand.game?.symbols||['🍋','🍒','⭐','🍀','🍉','💎'];
+  const reels=document.getElementById('slots-reels');
+  reels.innerHTML=[0,1,2].map(i=>`<div class="slots-reel" id="reel-${i}">${symbols[0]}</div>`).join('');
+  setProgress('Spin!');
+}
+function slotsPlay(){
+  if(slotsSpinning) return;
+  slotsSpinning=true;
+  document.getElementById('slots-btn').disabled=true;
+  document.getElementById('slots-status').textContent='';
+  const brand=currentBrand;
+  const symbols=brand.game?.symbols||['🍋','🍒','⭐','🍀','🍉','💎'];
+  const winCount=brand.game?.winCount||2;
+  [0,1,2].forEach(i=>document.getElementById(`reel-${i}`).classList.add('spinning'));
+  const results=[];
+  [0,1,2].forEach((i)=>{
+    setTimeout(()=>{
+      const sym=symbols[Math.floor(Math.random()*symbols.length)];
+      results[i]=sym;
+      const reel=document.getElementById(`reel-${i}`);
+      reel.classList.remove('spinning');
+      reel.textContent=sym;
+      if(i===2){
+        slotsSpinning=false;
+        document.getElementById('slots-btn').disabled=false;
+        const counts={};
+        results.forEach(s=>{ counts[s]=(counts[s]||0)+1; });
+        const maxMatch=Math.max(...Object.values(counts));
+        const won=maxMatch>=winCount;
+        if(won){ results.forEach((s,idx)=>{ if(counts[s]===maxMatch) document.getElementById(`reel-${idx}`).classList.add('winning'); }); }
+        const status=won?'🎉 Pobijeda!':'Pokušaj opet...';
+        document.getElementById('slots-status').textContent=status;
+        setTimeout(()=>showResult(won,won?'Jackpot! 🎰':'Skoro!',won?`Pogodak: ${results.join(' ')}!`:`Nije ovaj put: ${results.join(' ')}`),700);
+      }
+    },400+i*300+Math.random()*200);
+  });
+}
+
+// ===== LIVE SYNC =====
+window.addEventListener('storage',e=>{
+  if(e.key===BRANDS_KEY||e.key===SCREENS_KEY){
+    if(currentScreenId) loadForScreen(currentScreenId);
+    else { const brands=getBrands(); currentBrands=brands; renderHome(); }
+  }
+});
+
+// ===== INIT =====
+cfPull().then(() => { resolveScreen(); startPolling(); });
+</script>
+</body>
+</html>

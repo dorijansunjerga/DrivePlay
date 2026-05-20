@@ -1,0 +1,14 @@
+name = "driveplay-api"
+main = "index.js"
+compatibility_date = "2024-09-23"
+
+# KV namespace — create with:
+#   wrangler kv namespace create DP_KV
+# then paste the returned id below
+[[kv_namespaces]]
+binding = "DP_KV"
+id = "PASTE_YOUR_KV_NAMESPACE_ID_HERE"
+
+# API key is stored as a secret (never in this file):
+#   wrangler secret put API_KEY
+# then type your chosen key and press Enter
